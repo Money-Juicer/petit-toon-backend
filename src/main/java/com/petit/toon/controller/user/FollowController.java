@@ -5,10 +5,7 @@ import com.petit.toon.service.user.response.UserListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,5 +23,11 @@ public class FollowController {
     @GetMapping("/api/v1/follow/{userId}")
     public ResponseEntity<UserListResponse> getFollowingUsers(@PathVariable("userId") long userId) {
         return ResponseEntity.ok(followService.findFollowingUsers(userId));
+    }
+
+    @DeleteMapping("/api/v1/follow/{followId}")
+    public ResponseEntity<Void> deleteFollow(@PathVariable("followId") long followId) {
+        followService.unfollow(followId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

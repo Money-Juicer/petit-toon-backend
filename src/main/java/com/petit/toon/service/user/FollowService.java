@@ -44,4 +44,9 @@ public class FollowService {
                 .collect(Collectors.toList());
         return new UserListResponse(UserResponses);
     }
+
+    @Transactional
+    public void unfollow(long followId) {
+        followRepository.deleteById(followId);
+    }
 }
