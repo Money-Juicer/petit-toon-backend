@@ -4,9 +4,14 @@ import com.petit.toon.entity.user.Follow;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.UserRepository;
+import com.petit.toon.service.user.response.UserListResponse;
+import com.petit.toon.service.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,5 +35,13 @@ public class FollowService {
 
         followRepository.save(follow);
         return follow.getId();
+    }
+
+    public UserListResponse findFollowingUsers(long userId) {
+        List<User> followingUsers = followRepository.findByFollowerId(userId);
+        List<UserResponse> UserResponses = followingUsers.stream()
+                .map(UserResponse::of)
+                .collect(Collectors.toList());
+        return new UserListResponse(UserResponses);
     }
 }
