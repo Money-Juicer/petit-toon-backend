@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
@@ -72,6 +74,24 @@ class FollowServiceTest {
                         tuple(3l, "김승환")
                 );
     }
+
+    @Test
+    @DisplayName("팔로우를 취소한다")
+    void unfollow() {
+        // given
+        User user1 = createUser("KIM");
+        User user2 = createUser("LEE");
+
+        Follow follow = createFollow(user1, user2);
+
+        // when
+        followService.unfollow(follow.getId());
+
+        // then
+        List<Follow> follows = followRepository.findAll();
+        assertThat(follows).isEmpty();
+    }
+
 
     private Follow createFollow(User user1, User user2) {
         return followRepository.save(
