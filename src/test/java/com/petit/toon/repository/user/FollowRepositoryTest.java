@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -33,12 +34,14 @@ class FollowRepositoryTest {
         followRepository.save(createFollow(user1, user2));
         followRepository.save(createFollow(user1, user3));
 
+        PageRequest pageRequest = PageRequest.of(0, 20);
+
         // when
-        List<User> followUsers = followRepository.findByFollowerId(user1.getId());
+        List<Follow> followUsers = followRepository.findByFollowerId(user1.getId(), pageRequest);
 
         // then
         assertThat(followUsers.size()).isEqualTo(2);
-        assertThat(followUsers).extracting("name").contains("김승환", "김영현");
+        assertThat(followUsers).extracting("followee.name").contains("김승환", "김영현");
     }
 
     private Follow createFollow(User follower, User followee) {

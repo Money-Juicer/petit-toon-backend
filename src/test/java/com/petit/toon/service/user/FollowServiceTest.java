@@ -4,12 +4,13 @@ import com.petit.toon.entity.user.Follow;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.UserRepository;
-import com.petit.toon.service.user.response.UserListResponse;
+import com.petit.toon.service.user.response.FollowUserListResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -60,18 +61,20 @@ class FollowServiceTest {
         User user2 = createUser("이용우");
         User user3 = createUser("김승환");
 
-        createFollow(user1, user2);
-        createFollow(user1, user3);
+        Follow follow1 = createFollow(user1, user2);
+        Follow follow2 = createFollow(user1, user3);
+
+        PageRequest pageRequest = PageRequest.of(0, 20);
 
         // when
-        UserListResponse followingUsers = followService.findFollowingUsers(user1.getId());
+        FollowUserListResponse followingUsers = followService.findFollowingUsers(user1.getId(), pageRequest);
 
         // then
-        assertThat(followingUsers.getUsers().size()).isEqualTo(2);
-        assertThat(followingUsers.getUsers()).extracting("id", "name")
+        assertThat(followingUsers.getFollowUsers().size()).isEqualTo(2);
+        assertThat(followingUsers.getFollowUsers()).extracting("followId", "user.id", "user.name")
                 .contains(
-                        tuple(2l, "이용우"),
-                        tuple(3l, "김승환")
+                        tuple(follow1.getId(), user2.getId(), "이용우"),
+                        tuple(follow2.getId(), user3.getId(), "김승환")
                 );
     }
 

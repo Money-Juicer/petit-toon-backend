@@ -1,8 +1,10 @@
 package com.petit.toon.controller.user;
 
 import com.petit.toon.service.user.FollowService;
-import com.petit.toon.service.user.response.UserListResponse;
+import com.petit.toon.service.user.response.FollowUserListResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,9 @@ public class FollowController {
     }
 
     @GetMapping("/api/v1/follow/{userId}")
-    public ResponseEntity<UserListResponse> getFollowingUsers(@PathVariable("userId") long userId) {
-        return ResponseEntity.ok(followService.findFollowingUsers(userId));
+    public ResponseEntity<FollowUserListResponse> getFollowingUsers(@PathVariable("userId") long userId,
+                                                                    @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(followService.findFollowingUsers(userId, pageable));
     }
 
     @DeleteMapping("/api/v1/follow/{followId}")

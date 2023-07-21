@@ -4,9 +4,10 @@ import com.petit.toon.entity.user.Follow;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.UserRepository;
-import com.petit.toon.service.user.response.UserListResponse;
-import com.petit.toon.service.user.response.UserResponse;
+import com.petit.toon.service.user.response.FollowUserListResponse;
+import com.petit.toon.service.user.response.FollowUserResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,12 +38,12 @@ public class FollowService {
         return follow.getId();
     }
 
-    public UserListResponse findFollowingUsers(long userId) {
-        List<User> followingUsers = followRepository.findByFollowerId(userId);
-        List<UserResponse> UserResponses = followingUsers.stream()
-                .map(UserResponse::of)
+    public FollowUserListResponse findFollowingUsers(long userId, Pageable pageable) {
+        List<Follow> followingUsers = followRepository.findByFollowerId(userId, pageable);
+        List<FollowUserResponse> followUserResponses = followingUsers.stream()
+                .map(FollowUserResponse::of)
                 .collect(Collectors.toList());
-        return new UserListResponse(UserResponses);
+        return new FollowUserListResponse(followUserResponses);
     }
 
     @Transactional
