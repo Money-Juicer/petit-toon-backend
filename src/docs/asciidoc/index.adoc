@@ -1,0 +1,15 @@
+ifndef::snippets[]
+:snippets: ../../../../../build/generated-snippets
+endif::[]
+= Petit Toon Server REST API Documents
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Follow-API]]
+== Follow API
+
+include::api/user/follow.adoc[]

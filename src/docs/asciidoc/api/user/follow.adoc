@@ -1,0 +1,38 @@
+[[follow-create]]
+=== 팔로우 등록
+
+==== HTTP Request
+
+include::{snippets}/follow-create/http-request.adoc[]
+include::{snippets}/follow-create/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/follow-create/http-response.adoc[]
+include::{snippets}/follow-create/response-fields.adoc[]
+
+[[follow-list]]
+=== 팔로우 목록 조회
+
+==== HTTP Request
+
+include::{snippets}/follow-list/http-request.adoc[]
+include::{snippets}/follow-list/path-parameters.adoc[]
+include::{snippets}/follow-list/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/follow-list/http-response.adoc[]
+include::{snippets}/follow-list/response-fields.adoc[]
+
+[[follow-delete]]
+=== 팔로우 삭제
+
+==== HTTP Request
+
+include::{snippets}/follow-delete/http-request.adoc[]
+include::{snippets}/follow-delete/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/follow-delete/http-response.adoc[]
