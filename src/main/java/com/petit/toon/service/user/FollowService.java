@@ -4,6 +4,7 @@ import com.petit.toon.entity.user.Follow;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.UserRepository;
+import com.petit.toon.service.user.response.FollowResponse;
 import com.petit.toon.service.user.response.FollowUserListResponse;
 import com.petit.toon.service.user.response.FollowUserResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class FollowService {
     private final UserRepository userRepository;
 
     @Transactional
-    public long follow(long followerId, long followeeId) {
+    public FollowResponse follow(long followerId, long followeeId) {
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new RuntimeException("User not found. id: " + followerId));
         User followee = userRepository.findById(followeeId)
@@ -35,7 +36,7 @@ public class FollowService {
                 .build();
 
         followRepository.save(follow);
-        return follow.getId();
+        return new FollowResponse(follow.getId());
     }
 
     public FollowUserListResponse findFollowingUsers(long userId, Pageable pageable) {

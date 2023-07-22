@@ -4,6 +4,7 @@ import com.petit.toon.entity.user.Follow;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.UserRepository;
+import com.petit.toon.service.user.response.FollowResponse;
 import com.petit.toon.service.user.response.FollowUserListResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,10 +46,10 @@ class FollowServiceTest {
         User user2 = createUser("LEE");
 
         // when
-        long followId = followService.follow(user1.getId(), user2.getId());
+        FollowResponse response = followService.follow(user1.getId(), user2.getId());
 
         // then
-        Follow follow = followRepository.findById(followId).get();
+        Follow follow = followRepository.findById(response.getFollowId()).get();
         assertThat(follow.getFollower().getId()).isEqualTo(user1.getId());
         assertThat(follow.getFollowee().getId()).isEqualTo(user2.getId());
     }
