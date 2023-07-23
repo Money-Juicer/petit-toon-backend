@@ -50,4 +50,8 @@ public class Cartoon {
         this.description = description;
         this.viewCount = viewCount;
     }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
+    }
 }
