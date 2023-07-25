@@ -5,66 +5,57 @@ import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.repository.cartoon.ImageRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.nio.file.Files.createDirectory;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-@PropertySource("classpath:test.properties")
 public class ImageStoreService {
-//    @Value("${app.image.dir}")
-    private String location = "src/test/resources/images";
+
+    @Value("${app.toon.dir}")
+    private String location;
 
     private final ImageRepository imageRepository;
 
-    public Image storeImage(MultipartFile multipartFile, Cartoon cartoon, short n) throws IOException {
+    public Image storeImage(MultipartFile multipartFile, Cartoon cartoon, int n) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
         String originalFileName = multipartFile.getOriginalFilename();
-        String storeFileName = createFileName(originalFileName, cartoon.getId(), n);
-        String storePath = getFullPath(storeFileName, cartoon.getId());
+        String storeFileName = createFileName(originalFileName, cartoon.getId() + 1, n);
+        String storePath = getFullPath(storeFileName, cartoon.getId() + 1);
         multipartFile.transferTo(new File(storePath));
-        return imageRepository.save(Image.builder()
+        Image img = Image.builder()
                 .cartoon(cartoon)
                 .fileName(storeFileName)
                 .originalFileName(originalFileName)
                 .path(storePath)
-                .build());
+                .build();
+        imageRepository.save(img);
+        return img;
     }
 
-    public List<Image> storeImages(List<MultipartFile> multipartFiles, Cartoon cartoon) {
-        int n = 0;
+    public List<Image> storeImages(List<MultipartFile> multipartFiles, Cartoon cartoon) throws IOException {
+        createToonDirectory(cartoon.getId() + 1);
         List<Image> images = new ArrayList<>();
-        multipartFiles.stream()
-                .filter(it -> !it.isEmpty())
-                .forEach(it -> {
-                    try {
-                        images.add(storeImage(it, cartoon, (short) (n + 1)));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+
+        for (int i = 0; i < multipartFiles.size(); i++) {
+            images.add(storeImage(multipartFiles.get(i), cartoon, i));
+        }
         return images;
     }
 
-//    public List<Image> findImagesByIds(List<Long> imageId) {
-//        return imageId.stream()
-//                .map(id -> imageRepository.findById(id)
-//                        .orElseThrow(
-//                                IdNotFoundException::new
-//                        )).collect(Collectors.toList());
-//    }
-
-    private String createFileName(String originalFileName, long toonId, short n) {
+    private String createFileName(String originalFileName, long toonId, int n) {
         String extension = extractExtension(originalFileName);
         return toonId + "-" + n + "." + extension;
     }
@@ -75,7 +66,35 @@ public class ImageStoreService {
     }
 
     private String getFullPath(String filename, Long toonId) {
-        String absolutePath = new File(location).getAbsolutePath();
-        return absolutePath + "/" + toonId + "/" + filename;
+        String absolutePath = location + "/" + toonId + "/" + filename;
+        return new File(absolutePath).getAbsolutePath();
+    }
+
+    private void createToonDirectory(Long toonId) throws IOException {
+        String absolutePath = location + "/" + toonId;
+        String toonDirectoryPath = new File(absolutePath).getAbsolutePath();
+        createDirectory(Path.of(toonDirectoryPath));
+    }
+
+    public void deleteToon(Long toonId) {
+        String absolutePath = location + "/" + toonId;
+        String toonDirectoryPath = new File(absolutePath).getAbsolutePath();
+
+        File directory = new File(toonDirectoryPath);
+        try {
+            while (directory.exists()) {
+                File[] listFiles = directory.listFiles();
+
+                for (File file : listFiles) {
+                    file.delete();
+                }
+
+                if (listFiles.length == 0 && directory.isDirectory()) {
+                    directory.delete();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

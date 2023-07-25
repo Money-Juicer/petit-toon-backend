@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -21,7 +22,7 @@ public class ToonUploadService {
     private final UserRepository userRepository;
     private final ImageStoreService imageStoreService;
 
-    public Long save(ToonUploadInput input) {
+    public ToonUploadOutput save(ToonUploadInput input) throws IOException {
         Long userId = input.getUserId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
@@ -38,7 +39,6 @@ public class ToonUploadService {
 
         toonRepository.save(cartoon);
 
-        return cartoon.getId();
+        return new ToonUploadOutput(cartoon.getId());
     }
-
 }

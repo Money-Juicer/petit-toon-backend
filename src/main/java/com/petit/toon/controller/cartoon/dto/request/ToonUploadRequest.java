@@ -1,20 +1,24 @@
 package com.petit.toon.controller.cartoon.dto.request;
 
 import com.petit.toon.service.cartoon.dto.input.ToonUploadInput;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ToonUploadRequest {
+    @Positive
     private Long userId;
+    @NotEmpty
     private String title;
     private String description;
+    @NotNull
     private List<MultipartFile> toonImages;
 
     @Builder
