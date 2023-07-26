@@ -1,7 +1,7 @@
 package com.petit.toon.controller.cartoon.dto.request;
 
 import com.petit.toon.service.cartoon.dto.input.ToonUploadInput;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
@@ -15,7 +15,7 @@ import java.util.List;
 public class ToonUploadRequest {
     @Positive
     private Long userId;
-    @NotEmpty
+    @NotBlank
     private String title;
     private String description;
     @NotNull

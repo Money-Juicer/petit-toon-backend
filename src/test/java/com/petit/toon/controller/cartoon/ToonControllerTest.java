@@ -1,7 +1,7 @@
 package com.petit.toon.controller.cartoon;
 
 import com.petit.toon.controller.RestDocsSupport;
-import com.petit.toon.service.cartoon.ToonUploadService;
+import com.petit.toon.service.cartoon.ToonService;
 import com.petit.toon.service.cartoon.dto.output.ToonUploadOutput;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +18,11 @@ import java.io.FileInputStream;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ToonControllerTest extends RestDocsSupport {
 
     @MockBean
-    ToonUploadService toonUploadService;
+    ToonService toonService;
 
     String absolutePath;
 
@@ -43,11 +46,11 @@ public class ToonControllerTest extends RestDocsSupport {
     @DisplayName("웹툰 등록")
     void upload() throws Exception {
         //given
-        given(toonUploadService.save(any())).willReturn(new ToonUploadOutput(1l));
+        given(toonService.save(any())).willReturn(new ToonUploadOutput(1l));
 
-        MockMultipartFile file1 = new MockMultipartFile("sample1.png", "sample1.png", "multipart/form-data",
+        MockMultipartFile file1 = new MockMultipartFile("toonImages", "sample1.png", "multipart/form-data",
                 new FileInputStream(absolutePath + "/sample1.png"));
-        MockMultipartFile file2 = new MockMultipartFile("sample2.png", "sample2.png", "multipart/form-data",
+        MockMultipartFile file2 = new MockMultipartFile("toonImages", "sample2.png", "multipart/form-data",
                 new FileInputStream(absolutePath + "/sample2.png"));
 
         // when // then
@@ -61,8 +64,21 @@ public class ToonControllerTest extends RestDocsSupport {
                 .andExpect(jsonPath("$.toonId").value(1l))
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(document("toon-create", responseFields(
-                                fieldWithPath("toonId").description("생성된 팔로우 ID")
+                                fieldWithPath("toonId").description("생성된 웹툰 ID")
                         )
                 ));
+    }
+
+    @Test
+    @DisplayName("웹툰 삭제")
+    void deleteToon() throws Exception {
+        //given // when // then
+        mockMvc.perform(delete("/api/v1/toon/{toonId}", 1l))
+                .andExpect(status().isNoContent())
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document("toon-delete",
+                        pathParameters(
+                                parameterWithName("toonId").description("웹툰 ID")
+                        )));
     }
 }
