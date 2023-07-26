@@ -41,4 +41,9 @@ public class ToonUploadService {
 
         return new ToonUploadOutput(cartoon.getId());
     }
+
+    public void delete(Long toonId) {
+        imageStoreService.deleteImages(toonId);
+        toonRepository.deleteById(toonId);
+    }
 }

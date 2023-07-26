@@ -1,2 +1,36 @@
 POST localhost:8080/api/v1/toon
+Content-Type: multipart/form-data; boundary=boundary
 
+--boundary
+Content-Disposition: form-data; name="toonImages"; filename="sample1.png"
+
+< ../src/test/resources/sample-toons/sample1.png
+
+--boundary
+Content-Disposition: form-data; name="toonImages"; filename="sample2.png"
+
+< ../src/test/resources/sample-toons/sample2.png
+
+--boundary
+Content-Disposition: form-data; name="userId";
+Content-Type: text/plain
+
+1
+
+--boundary
+Content-Disposition: form-data; name="title";
+Content-Type: text/plain
+
+sample-title
+
+--boundary
+Content-Disposition: form-data; name="description";
+Content-Type: text/plain
+
+sample-description
+--boundary
+
+
+###
+
+DELETE localhost:8080/api/v1/toon/1

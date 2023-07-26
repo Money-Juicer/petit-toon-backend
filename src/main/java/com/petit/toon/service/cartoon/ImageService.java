@@ -41,7 +41,6 @@ public class ImageStoreService {
                 .originalFileName(originalFileName)
                 .path(storePath)
                 .build();
-        imageRepository.save(img);
         return img;
     }
 
@@ -76,7 +75,7 @@ public class ImageStoreService {
         createDirectory(Path.of(toonDirectoryPath));
     }
 
-    public void deleteToon(Long toonId) {
+    public void deleteImages(Long toonId) {
         String absolutePath = location + "/" + toonId;
         String toonDirectoryPath = new File(absolutePath).getAbsolutePath();
 

@@ -8,7 +8,6 @@ import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.dto.input.ToonUploadInput;
 import com.petit.toon.service.cartoon.dto.output.ToonUploadOutput;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -82,7 +86,30 @@ public class ToonUploadServiceTest {
         assertThat(toon.getImages().get(1).getId()).isEqualTo(2l);
         assertThat(toon.getImages().get(2).getId()).isEqualTo(3l);
 
-        imageStoreService.deleteToon(toon.getId());
+        toonUploadService.delete(toon.getId());
+    }
+
+    /**
+     * 웹툰 삭제 테스트
+     */
+    @Test
+    @Transactional
+    void 웹툰삭제() {
+        //given
+        User user = createUser("KIM");
+        Cartoon mockCartoon = Cartoon.builder()
+                .user(user)
+                .title("title")
+                .description("sample")
+                .viewCount(0)
+                .build();
+        toonRepository.save(mockCartoon);
+
+        //when
+        toonUploadService.delete(1l);
+
+        //then
+        assertThat(toonRepository.findById(mockCartoon.getId())).isEmpty();
     }
 
     private User createUser(String name) {
