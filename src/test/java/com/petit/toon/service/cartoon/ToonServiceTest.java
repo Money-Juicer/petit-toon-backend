@@ -20,17 +20,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class ToonUploadServiceTest {
+public class ToonServiceTest {
 
     @Autowired
     UserRepository userRepository;
@@ -42,10 +38,10 @@ public class ToonUploadServiceTest {
     ImageRepository imageRepository;
 
     @Autowired
-    ToonUploadService toonUploadService;
+    ToonService toonService;
 
     @Autowired
-    ImageStoreService imageStoreService;
+    ImageService imageService;
 
     String absolutePath;
 
@@ -75,7 +71,7 @@ public class ToonUploadServiceTest {
                 .build();
 
         //when
-        ToonUploadOutput output = toonUploadService.save(mockInput);
+        ToonUploadOutput output = toonService.save(mockInput);
 
         //then
         Cartoon toon = toonRepository.findById(output.getToonId()).get();
@@ -86,7 +82,7 @@ public class ToonUploadServiceTest {
         assertThat(toon.getImages().get(1).getId()).isEqualTo(2l);
         assertThat(toon.getImages().get(2).getId()).isEqualTo(3l);
 
-        toonUploadService.delete(toon.getId());
+        toonService.delete(toon.getId());
     }
 
     /**
@@ -106,7 +102,7 @@ public class ToonUploadServiceTest {
         toonRepository.save(mockCartoon);
 
         //when
-        toonUploadService.delete(1l);
+        toonService.delete(1l);
 
         //then
         assertThat(toonRepository.findById(mockCartoon.getId())).isEmpty();

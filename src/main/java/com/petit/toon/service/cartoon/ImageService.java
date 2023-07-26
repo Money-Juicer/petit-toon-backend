@@ -20,7 +20,7 @@ import static java.nio.file.Files.createDirectory;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ImageStoreService {
+public class ImageService {
 
     @Value("${app.toon.dir}")
     private String location;

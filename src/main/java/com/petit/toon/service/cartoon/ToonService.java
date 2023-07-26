@@ -17,10 +17,10 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ToonUploadService {
+public class ToonService {
     private final ToonRepository toonRepository;
     private final UserRepository userRepository;
-    private final ImageStoreService imageStoreService;
+    private final ImageService imageService;
 
     public ToonUploadOutput save(ToonUploadInput input) throws IOException {
         Long userId = input.getUserId();
@@ -34,7 +34,7 @@ public class ToonUploadService {
                 .viewCount(0)
                 .build();
 
-        List<Image> images = imageStoreService.storeImages(input.getToonImages(), cartoon);
+        List<Image> images = imageService.storeImages(input.getToonImages(), cartoon);
         cartoon.setImages(images);
 
         toonRepository.save(cartoon);
@@ -43,7 +43,7 @@ public class ToonUploadService {
     }
 
     public void delete(Long toonId) {
-        imageStoreService.deleteImages(toonId);
+        imageService.deleteImages(toonId);
         toonRepository.deleteById(toonId);
     }
 }
