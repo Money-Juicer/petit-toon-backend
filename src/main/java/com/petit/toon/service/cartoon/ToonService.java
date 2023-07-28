@@ -43,7 +43,6 @@ public class ToonService {
     }
 
     public void delete(Long toonId) {
-        imageService.deleteImages(toonId);
         toonRepository.deleteById(toonId);
     }
 }
