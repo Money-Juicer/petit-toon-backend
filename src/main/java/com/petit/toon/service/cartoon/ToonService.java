@@ -23,7 +23,7 @@ public class ToonService {
     private final UserRepository userRepository;
     private final ImageService imageService;
 
-    @Value("{app.toon.dir}")
+    @Value("${app.toon.dir}")
     private String toonDirectory;
 
     public ToonUploadOutput save(ToonUploadInput input) throws IOException {
