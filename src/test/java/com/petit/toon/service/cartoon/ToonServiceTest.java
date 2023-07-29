@@ -10,6 +10,7 @@ import com.petit.toon.service.cartoon.dto.output.ToonUploadOutput;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -19,10 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -45,12 +46,15 @@ public class ToonServiceTest {
 
     String absolutePath;
 
+    @TempDir
+    Path tempDir;
+
     @BeforeEach
     void setUp() {
         String path = "src/test/resources/sample-toons";
         absolutePath = new File(path).getAbsolutePath();
+        toonService.setToonDirectory(String.valueOf(tempDir));
     }
-
     @Test
     @Transactional
     void 웹툰등록() throws IOException {
@@ -63,15 +67,22 @@ public class ToonServiceTest {
         MultipartFile file3 = new MockMultipartFile("sample3.png", "sample3.png", "multipart/form-data",
                 new FileInputStream(absolutePath + "/sample3.png"));
 
-        ToonUploadInput mockInput = ToonUploadInput.builder()
+        ToonUploadInput mockInput1 = ToonUploadInput.builder()
                 .userId(1l)
                 .title("sample-title")
                 .description("sample-description")
                 .toonImages(Arrays.asList(file1, file2, file3))
                 .build();
 
+        ToonUploadInput mockInput2 = ToonUploadInput.builder()
+                .userId(1l)
+                .title("sample-title2")
+                .description("sample-description2")
+                .toonImages(Arrays.asList(file1, file2))
+                .build();
         //when
-        ToonUploadOutput output = toonService.save(mockInput);
+        ToonUploadOutput output = toonService.save(mockInput1);
+        ToonUploadOutput output2 = toonService.save(mockInput2);
 
         //then
         Cartoon toon = toonRepository.findById(output.getToonId()).get();
@@ -82,12 +93,14 @@ public class ToonServiceTest {
         assertThat(toon.getImages().get(1).getId()).isEqualTo(2l);
         assertThat(toon.getImages().get(2).getId()).isEqualTo(3l);
 
-        toonService.delete(toon.getId());
+        Cartoon toon2 = toonRepository.findById(output2.getToonId()).get();
+        assertThat(toon2.getId()).isEqualTo(2l);
+        assertThat(toon2.getTitle()).isEqualTo("sample-title2");
+        assertThat(toon2.getDescription()).isEqualTo("sample-description2");
+        assertThat(toon2.getImages().get(0).getId()).isEqualTo(4l);
+        assertThat(toon2.getImages().get(1).getId()).isEqualTo(5l);
     }
 
-    /**
-     * 웹툰 삭제 테스트
-     */
     @Test
     @Transactional
     void 웹툰삭제() {
@@ -99,10 +112,11 @@ public class ToonServiceTest {
                 .description("sample")
                 .viewCount(0)
                 .build();
+
         toonRepository.save(mockCartoon);
 
         //when
-        toonService.delete(1l);
+        toonService.delete(mockCartoon.getId());
 
         //then
         assertThat(toonRepository.findById(mockCartoon.getId())).isEmpty();

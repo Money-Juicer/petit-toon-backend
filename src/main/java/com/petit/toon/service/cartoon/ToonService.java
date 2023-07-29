@@ -9,6 +9,7 @@ import com.petit.toon.service.cartoon.dto.input.ToonUploadInput;
 import com.petit.toon.service.cartoon.dto.output.ToonUploadOutput;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,6 +23,9 @@ public class ToonService {
     private final UserRepository userRepository;
     private final ImageService imageService;
 
+    @Value("{app.toon.dir}")
+    private String toonDirectory;
+
     public ToonUploadOutput save(ToonUploadInput input) throws IOException {
         Long userId = input.getUserId();
         User user = userRepository.findById(userId)
@@ -34,7 +38,9 @@ public class ToonService {
                 .viewCount(0)
                 .build();
 
-        List<Image> images = imageService.storeImages(input.getToonImages(), cartoon);
+        toonRepository.save(cartoon);
+
+        List<Image> images = imageService.storeImages(input.getToonImages(), cartoon, toonDirectory);
         cartoon.setImages(images);
 
         toonRepository.save(cartoon);
@@ -44,5 +50,9 @@ public class ToonService {
 
     public void delete(Long toonId) {
         toonRepository.deleteById(toonId);
+    }
+
+    public void setToonDirectory(String path) {
+        this.toonDirectory = path;
     }
 }

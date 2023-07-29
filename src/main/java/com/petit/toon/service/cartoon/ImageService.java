@@ -5,7 +5,6 @@ import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.repository.cartoon.ImageRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,34 +21,30 @@ import static java.nio.file.Files.createDirectory;
 @RequiredArgsConstructor
 public class ImageService {
 
-    @Value("${app.toon.dir}")
-    private String location;
-
     private final ImageRepository imageRepository;
 
-    public Image storeImage(MultipartFile multipartFile, Cartoon cartoon, int n) throws IOException {
+    public Image storeImage(MultipartFile multipartFile, Cartoon cartoon, int n, String toonDirectory) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
         String originalFileName = multipartFile.getOriginalFilename();
-        String storeFileName = createFileName(originalFileName, cartoon.getId() + 1, n);
-        String storePath = getFullPath(storeFileName, cartoon.getId() + 1);
+        String storeFileName = createFileName(originalFileName, cartoon.getId(), n);
+        String storePath = getFullPath(storeFileName, cartoon.getId(), toonDirectory);
         multipartFile.transferTo(new File(storePath));
-        Image img = Image.builder()
+        return imageRepository.save(Image.builder()
                 .cartoon(cartoon)
                 .fileName(storeFileName)
                 .originalFileName(originalFileName)
                 .path(storePath)
-                .build();
-        return img;
+                .build());
     }
 
-    public List<Image> storeImages(List<MultipartFile> multipartFiles, Cartoon cartoon) throws IOException {
-        createToonDirectory(cartoon.getId() + 1);
+    public List<Image> storeImages(List<MultipartFile> multipartFiles, Cartoon cartoon, String toonDirectory) throws IOException {
+        createToonDirectory(cartoon.getId(), toonDirectory);
         List<Image> images = new ArrayList<>();
 
         for (int i = 0; i < multipartFiles.size(); i++) {
-            images.add(storeImage(multipartFiles.get(i), cartoon, i));
+            images.add(storeImage(multipartFiles.get(i), cartoon, i, toonDirectory));
         }
         return images;
     }
@@ -64,20 +59,27 @@ public class ImageService {
         return fileName.substring(idx + 1);
     }
 
-    private String getFullPath(String filename, Long toonId) {
-        String absolutePath = location + "/" + toonId + "/" + filename;
+    private String getFullPath(String filename, Long toonId, String toonDirectory) {
+        String absolutePath = toonDirectory + "/" + toonId + "/" + filename;
         return new File(absolutePath).getAbsolutePath();
     }
 
-    private void createToonDirectory(Long toonId) throws IOException {
-        String absolutePath = location + "/" + toonId;
-        String toonDirectoryPath = new File(absolutePath).getAbsolutePath();
+    private String createToonDirectory(Long toonId, String toonDirectory) throws IOException {
+        String toonImageDirectory = toonDirectory + "/" + toonId;
+        String toonDirectoryPath = new File(toonImageDirectory).getAbsolutePath();
         createDirectory(Path.of(toonDirectoryPath));
+        return toonImageDirectory;
     }
 
-    public void deleteImages(Long toonId) {
-        String absolutePath = location + "/" + toonId;
-        String toonDirectoryPath = new File(absolutePath).getAbsolutePath();
+
+    /**
+     * deleteImages를 사용하는 서비스가 없기에 추후 수정 예정.
+     *
+     * ToonService에서 사용할 경우, 아래와 같이 location을 인자로 보내줌.
+     * @param location > String "{app.toon.dir}/toonId"
+     */
+    public void deleteImagesByToonDirectory(String location) {
+        String toonDirectoryPath = new File(location).getAbsolutePath();
 
         File directory = new File(toonDirectoryPath);
         try {
