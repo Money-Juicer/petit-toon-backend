@@ -1,0 +1,14 @@
+[[search]]
+=== 검색
+
+==== HTTP Request
+
+keyword: "김영현"
+
+include::{snippets}/search/http-request.adoc[]
+include::{snippets}/search/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/search/http-response.adoc[]
+include::{snippets}/search/response-fields.adoc[]

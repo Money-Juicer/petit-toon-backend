@@ -13,3 +13,13 @@ endif::[]
 == Follow API
 
 include::api/user/follow.adoc[]
+
+[[Toon-API]]
+== Toon API
+
+include::api/cartoon/toon.adoc[]
+
+[[Search-API]]
+== Search API
+
+include::api/search/search.adoc[]

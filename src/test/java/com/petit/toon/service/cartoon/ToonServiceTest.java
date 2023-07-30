@@ -5,8 +5,8 @@ import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.cartoon.ImageRepository;
 import com.petit.toon.repository.cartoon.ToonRepository;
 import com.petit.toon.repository.user.UserRepository;
-import com.petit.toon.service.cartoon.dto.input.ToonUploadInput;
-import com.petit.toon.service.cartoon.dto.output.ToonUploadOutput;
+import com.petit.toon.service.cartoon.request.ToonUploadServiceRequest;
+import com.petit.toon.service.cartoon.response.ToonUploadResponse;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,22 +67,22 @@ public class ToonServiceTest {
         MultipartFile file3 = new MockMultipartFile("sample3.png", "sample3.png", "multipart/form-data",
                 new FileInputStream(absolutePath + "/sample3.png"));
 
-        ToonUploadInput mockInput1 = ToonUploadInput.builder()
-                .userId(1l)
+        ToonUploadServiceRequest mockInput1 = ToonUploadServiceRequest.builder()
+                .userId(user.getId())
                 .title("sample-title")
                 .description("sample-description")
                 .toonImages(Arrays.asList(file1, file2, file3))
                 .build();
 
-        ToonUploadInput mockInput2 = ToonUploadInput.builder()
-                .userId(1l)
+        ToonUploadServiceRequest mockInput2 = ToonUploadServiceRequest.builder()
+                .userId(user.getId())
                 .title("sample-title2")
                 .description("sample-description2")
                 .toonImages(Arrays.asList(file1, file2))
                 .build();
         //when
-        ToonUploadOutput output = toonService.save(mockInput1);
-        ToonUploadOutput output2 = toonService.save(mockInput2);
+        ToonUploadResponse output = toonService.save(mockInput1);
+        ToonUploadResponse output2 = toonService.save(mockInput2);
 
         //then
         Cartoon toon = toonRepository.findById(output.getToonId()).get();

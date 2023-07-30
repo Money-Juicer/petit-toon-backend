@@ -1,4 +1,4 @@
-package com.petit.toon.service.cartoon.dto.input;
+package com.petit.toon.service.cartoon.request;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,15 +10,15 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ToonUploadInput {
+public class ToonUploadServiceRequest {
     private Long userId;
     private String title;
     private String description;
     private List<MultipartFile> toonImages;
 
     @Builder
-    public ToonUploadInput(Long userId, String title, String description,
-                           List<MultipartFile> toonImages) {
+    public ToonUploadServiceRequest(Long userId, String title, String description,
+                                    List<MultipartFile> toonImages) {
         this.userId = userId;
         this.title = title;
         this.description = description;

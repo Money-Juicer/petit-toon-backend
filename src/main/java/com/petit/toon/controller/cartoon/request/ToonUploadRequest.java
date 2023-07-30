@@ -1,6 +1,6 @@
-package com.petit.toon.controller.cartoon.dto.request;
+package com.petit.toon.controller.cartoon.request;
 
-import com.petit.toon.service.cartoon.dto.input.ToonUploadInput;
+import com.petit.toon.service.cartoon.request.ToonUploadServiceRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -30,8 +30,8 @@ public class ToonUploadRequest {
         this.toonImages = toonImages;
     }
 
-    public ToonUploadInput toInput() {
-        return ToonUploadInput.builder()
+    public ToonUploadServiceRequest toInput() {
+        return ToonUploadServiceRequest.builder()
                 .userId(userId)
                 .title(title)
                 .description(description)

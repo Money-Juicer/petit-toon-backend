@@ -5,9 +5,12 @@ import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.repository.cartoon.ImageRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.imgscalr.Scalr;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -47,6 +50,22 @@ public class ImageService {
             images.add(storeImage(multipartFiles.get(i), cartoon, i, toonDirectory));
         }
         return images;
+    }
+
+    public String makeThumbnail(MultipartFile multipartFile, Cartoon cartoon, String toonDirectory) throws IOException {
+        BufferedImage inputImage = ImageIO.read(multipartFile.getInputStream());
+        ;
+        int width = inputImage.getWidth() / 5;
+        int height = inputImage.getHeight() / 5;
+
+        String extension = extractExtension(multipartFile.getOriginalFilename());
+        String fileName = cartoon.getId() + "-" + "thumb" + "." + extension;
+        String thumbnailPath = getFullPath(fileName, cartoon.getId(), toonDirectory);
+        File thumbnailFile = new File(thumbnailPath);
+
+        BufferedImage resizeImage = Scalr.resize(inputImage, width, height);
+        ImageIO.write(resizeImage, extension, thumbnailFile);
+        return thumbnailPath;
     }
 
     private String createFileName(String originalFileName, long toonId, int n) {

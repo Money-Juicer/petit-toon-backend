@@ -1,8 +1,8 @@
 package com.petit.toon.controller.cartoon;
 
-import com.petit.toon.controller.cartoon.dto.request.ToonUploadRequest;
+import com.petit.toon.controller.cartoon.request.ToonUploadRequest;
 import com.petit.toon.service.cartoon.ToonService;
-import com.petit.toon.service.cartoon.dto.output.ToonUploadOutput;
+import com.petit.toon.service.cartoon.response.ToonUploadResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ public class ToonController {
     }
 
     @PostMapping("/api/v1/toon")
-    public ResponseEntity<ToonUploadOutput> upload(@Valid @ModelAttribute ToonUploadRequest toonUploadRequest) throws IOException {
-        ToonUploadOutput output = toonService.save(toonUploadRequest.toInput());
+    public ResponseEntity<ToonUploadResponse> upload(@Valid @ModelAttribute ToonUploadRequest toonUploadRequest) throws IOException {
+        ToonUploadResponse output = toonService.save(toonUploadRequest.toInput());
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 

@@ -1,0 +1,23 @@
+[[toon-create]]
+=== 웹툰 등록
+
+==== HTTP Request
+
+include::{snippets}/toon-create/curl-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-create/http-response.adoc[]
+include::{snippets}/toon-create/response-fields.adoc[]
+
+[[toon-delete]]
+=== 웹툰 삭제
+
+==== HTTP Request
+
+include::{snippets}/toon-delete/http-request.adoc[]
+include::{snippets}/toon-delete/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-delete/http-response.adoc[]

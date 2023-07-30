@@ -2,7 +2,7 @@ package com.petit.toon.controller.cartoon;
 
 import com.petit.toon.controller.RestDocsSupport;
 import com.petit.toon.service.cartoon.ToonService;
-import com.petit.toon.service.cartoon.dto.output.ToonUploadOutput;
+import com.petit.toon.service.cartoon.response.ToonUploadResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ public class ToonControllerTest extends RestDocsSupport {
     @DisplayName("웹툰 등록")
     void upload() throws Exception {
         //given
-        given(toonService.save(any())).willReturn(new ToonUploadOutput(1l));
+        given(toonService.save(any())).willReturn(new ToonUploadResponse(1l));
 
         MockMultipartFile file1 = new MockMultipartFile("toonImages", "sample1.png", "multipart/form-data",
                 new FileInputStream(absolutePath + "/sample1.png"));

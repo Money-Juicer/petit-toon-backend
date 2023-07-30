@@ -31,6 +31,8 @@ public class Cartoon {
 
     private int viewCount;
 
+    private String thumbnailPath;
+
     @OneToMany(mappedBy = "cartoon", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>();
 
@@ -44,14 +46,19 @@ public class Cartoon {
     private LocalDateTime modifiedDateTime;
 
     @Builder
-    private Cartoon(User user, String title, String description, int viewCount) {
+    private Cartoon(User user, String title, String description, int viewCount, String thumbnailPath) {
         this.user = user;
         this.title = title;
         this.description = description;
         this.viewCount = viewCount;
+        this.thumbnailPath = thumbnailPath;
     }
 
     public void setImages(List<Image> images) {
         this.images = images;
+    }
+
+    public void setThumbnailPath(String thumbnailPath) {
+        this.thumbnailPath = thumbnailPath;
     }
 }
