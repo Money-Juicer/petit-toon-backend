@@ -33,9 +33,6 @@ sample-description
 
 ###
 
-<<<<<<< HEAD
-DELETE localhost:8080/api/v1/toon/1
-=======
 POST localhost:8080/api/v1/toon
 Content-Type: multipart/form-data; boundary=boundary2
 
@@ -72,6 +69,7 @@ sample-description
 ###
 
 DELETE localhost:8080/api/v1/toon/1
+
 
 ###
 
