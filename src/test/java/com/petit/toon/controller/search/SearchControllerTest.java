@@ -65,6 +65,8 @@ class SearchControllerTest extends RestDocsSupport {
                                         .description("유저 이름"),
                                 fieldWithPath("users[].nickname").type(JsonFieldType.STRING)
                                         .description("유저 닉네임"),
+                                fieldWithPath("users[].profileImageId").type(JsonFieldType.NUMBER)
+                                        .description("유저 프로필 이미지 ID"),
                                 fieldWithPath("toons[]").type(JsonFieldType.ARRAY)
                                         .description("만화 정보 목록 데이터"),
                                 fieldWithPath("toons[].id").type(JsonFieldType.NUMBER)

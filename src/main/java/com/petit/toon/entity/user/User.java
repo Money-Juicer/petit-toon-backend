@@ -28,6 +28,8 @@ public class User {
 
     private String password;
 
+    private long profileImageId;
+
     @CreationTimestamp
     private LocalDateTime createdDateTime;
 
@@ -40,5 +42,10 @@ public class User {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
+        this.profileImageId = 0l;
+    }
+
+    public void setProfileImageId (long profileImageId) {
+        this.profileImageId = profileImageId;
     }
 }

@@ -95,7 +95,9 @@ class FollowControllerTest extends RestDocsSupport {
                                 fieldWithPath("followUsers[].user.name").type(JsonFieldType.STRING)
                                         .description("유저 이름"),
                                 fieldWithPath("followUsers[].user.nickname").type(JsonFieldType.STRING)
-                                        .description("유저 닉네임")
+                                        .description("유저 닉네임"),
+                                fieldWithPath("followUsers[].user.profileImageId").type(JsonFieldType.NUMBER)
+                                        .description("유저 프로필 이미지 ID")
                         )
                 ));
     }
