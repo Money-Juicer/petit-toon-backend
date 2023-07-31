@@ -86,19 +86,19 @@ public class ToonServiceTest {
 
         //then
         Cartoon toon = toonRepository.findById(output.getToonId()).get();
-        assertThat(toon.getId()).isEqualTo(1l);
+        assertThat(toon.getId()).isEqualTo(output.getToonId());
         assertThat(toon.getTitle()).isEqualTo("sample-title");
         assertThat(toon.getDescription()).isEqualTo("sample-description");
-        assertThat(toon.getImages().get(0).getId()).isEqualTo(1l);
-        assertThat(toon.getImages().get(1).getId()).isEqualTo(2l);
-        assertThat(toon.getImages().get(2).getId()).isEqualTo(3l);
+        assertThat(toon.getImages().get(0).getOriginalFileName()).isEqualTo("sample1.png");
+        assertThat(toon.getImages().get(1).getOriginalFileName()).isEqualTo("sample2.png");
+        assertThat(toon.getImages().get(2).getOriginalFileName()).isEqualTo("sample3.png");
 
         Cartoon toon2 = toonRepository.findById(output2.getToonId()).get();
-        assertThat(toon2.getId()).isEqualTo(2l);
+        assertThat(toon2.getId()).isEqualTo(output2.getToonId());
         assertThat(toon2.getTitle()).isEqualTo("sample-title2");
         assertThat(toon2.getDescription()).isEqualTo("sample-description2");
-        assertThat(toon2.getImages().get(0).getId()).isEqualTo(4l);
-        assertThat(toon2.getImages().get(1).getId()).isEqualTo(5l);
+        assertThat(toon2.getImages().get(0).getOriginalFileName()).isEqualTo("sample1.png");
+        assertThat(toon2.getImages().get(1).getOriginalFileName()).isEqualTo("sample2.png");
     }
 
     @Test

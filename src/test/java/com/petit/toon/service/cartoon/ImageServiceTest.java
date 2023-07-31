@@ -78,15 +78,13 @@ public class ImageServiceTest {
         Image img2 = imageService.storeImage(file, mockCartoon, 1, String.valueOf(tempDir));
 
         //then
-        assertThat(img1.getId()).isEqualTo(1l);
-        assertThat(img1.getFileName()).isEqualTo("1-0.png");
-        assertThat(img1.getPath()).isEqualTo(tempDir.resolve(String.valueOf(mockCartoon.getId())).resolve("1-0.png").toString());
+        assertThat(img1.getFileName()).isEqualTo(img1.getCartoon().getId() + "-0.png");
+        assertThat(img1.getPath()).isEqualTo(tempDir.resolve(String.valueOf(mockCartoon.getId())).resolve(img1.getCartoon().getId() + "-0.png").toString());
         assertThat(img1.getOriginalFileName()).isEqualTo("sample1.png");
         assertThat(img1.getCartoon()).isEqualTo(mockCartoon);
 
-        assertThat(img2.getId()).isEqualTo(2l);
-        assertThat(img2.getFileName()).isEqualTo("1-1.png");
-        assertThat(img2.getPath()).isEqualTo(tempDir.resolve(String.valueOf(mockCartoon.getId())).resolve("1-1.png").toString());
+        assertThat(img2.getFileName()).isEqualTo(img1.getCartoon().getId() + "-1.png");
+        assertThat(img2.getPath()).isEqualTo(tempDir.resolve(String.valueOf(mockCartoon.getId())).resolve(img1.getCartoon().getId() + "-1.png").toString());
         assertThat(img2.getOriginalFileName()).isEqualTo("sample1.png");
         assertThat(img2.getCartoon()).isEqualTo(mockCartoon);
     }
