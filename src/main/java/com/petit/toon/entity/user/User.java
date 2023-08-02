@@ -28,7 +28,8 @@ public class User {
 
     private String password;
 
-    private long profileImageId;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private ProfileImage profileImage;
 
     @CreationTimestamp
     private LocalDateTime createdDateTime;
@@ -42,10 +43,9 @@ public class User {
         this.nickname = nickname;
         this.email = email;
         this.password = password;
-        this.profileImageId = 0l;
     }
 
-    public void setProfileImageId (long profileImageId) {
-        this.profileImageId = profileImageId;
+    public void setProfileImage(ProfileImage profileImage) {
+        this.profileImage = profileImage;
     }
 }

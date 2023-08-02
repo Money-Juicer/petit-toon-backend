@@ -22,6 +22,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ProfileImageService {
 
+    public static final long DEFAULT_PROFILE_IMAGE_ID = 1l;
     private final UserRepository userRepository;
     private final ProfileImageRepository profileImageRepository;
 
@@ -32,11 +33,11 @@ public class ProfileImageService {
      * User Profile Image upload
      */
     public ProfileImageResponse upload(long userId, MultipartFile input) throws IOException {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
 
-        if(user.getProfileImageId() != 0l) {
-            profileImageRepository.deleteById(user.getProfileImageId());
+        if (user.getProfileImage().getId() != DEFAULT_PROFILE_IMAGE_ID) {
+            profileImageRepository.delete(user.getProfileImage());
         }
 
         /**
@@ -72,8 +73,8 @@ public class ProfileImageService {
         /**
          * user.profileImageId Update.
          */
-        user.setProfileImageId(profileImage.getId());
-        userRepository.save(user);
+        user.setProfileImage(profileImage);
+//        userRepository.save(user);
 
         return new ProfileImageResponse(profileImage.getId());
     }
@@ -82,16 +83,17 @@ public class ProfileImageService {
      * Default ProfileImage로 변경.
      */
     public void updateToDefault(long userId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
 
-        if(user.getProfileImageId() == 0l) {
+        if (user.getProfileImage().getId() == DEFAULT_PROFILE_IMAGE_ID) {
             return;
         }
-        profileImageRepository.deleteById(user.getProfileImageId());
+        profileImageRepository.deleteById(user.getProfileImage().getId());
 
-        user.setProfileImageId(0l);
-        userRepository.save(user);
+        ProfileImage defaultImage = profileImageRepository.findById(DEFAULT_PROFILE_IMAGE_ID).get();
+        user.setProfileImage(defaultImage);
+//        userRepository.save(user);
     }
 
     private String extractExtension(String fileName) {

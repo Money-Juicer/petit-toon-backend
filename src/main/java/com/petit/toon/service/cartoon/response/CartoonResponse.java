@@ -10,14 +10,16 @@ public class CartoonResponse {
     private String title;
     private String description;
     private String author;
+    private String profileImageUrl;
     private String thumbnailUrl;
 
     @Builder
-    private CartoonResponse(long id, String title, String description, String author, String thumbnailUrl) {
+    private CartoonResponse(long id, String title, String description, String author, String profileImageUrl, String thumbnailUrl) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.author = author;
+        this.profileImageUrl = profileImageUrl;
         this.thumbnailUrl = thumbnailUrl;
     }
 
@@ -27,6 +29,7 @@ public class CartoonResponse {
                 .title(cartoon.getTitle())
                 .description(cartoon.getDescription())
                 .author(cartoon.getUser().getNickname())
+                .profileImageUrl(cartoon.getUser().getProfileImage().getPath())
                 .thumbnailUrl(cartoon.getThumbnailPath())
                 .build();
     }
