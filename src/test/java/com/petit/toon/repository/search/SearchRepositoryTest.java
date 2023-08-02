@@ -3,7 +3,7 @@ package com.petit.toon.repository.search;
 import com.petit.toon.config.QueryDslConfig;
 import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.user.User;
-import com.petit.toon.repository.cartoon.ToonRepository;
+import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class SearchRepositoryTest {
     UserRepository userRepository;
 
     @Autowired
-    ToonRepository toonRepository;
+    CartoonRepository cartoonRepository;
 
     @Test
     @DisplayName("nickname에 keyword가 포함된 유저를 찾는다")
@@ -100,7 +100,7 @@ class SearchRepositoryTest {
     }
 
     private Cartoon createToon(User user, String title, String description) {
-        return toonRepository.save(Cartoon.builder()
+        return cartoonRepository.save(Cartoon.builder()
                 .user(user)
                 .title(title)
                 .description(description)
