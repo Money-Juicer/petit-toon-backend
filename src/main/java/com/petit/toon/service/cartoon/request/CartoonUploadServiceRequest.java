@@ -10,15 +10,15 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ToonUploadServiceRequest {
+public class CartoonUploadServiceRequest {
     private Long userId;
     private String title;
     private String description;
     private List<MultipartFile> toonImages;
 
     @Builder
-    public ToonUploadServiceRequest(Long userId, String title, String description,
-                                    List<MultipartFile> toonImages) {
+    public CartoonUploadServiceRequest(Long userId, String title, String description,
+                                       List<MultipartFile> toonImages) {
         this.userId = userId;
         this.title = title;
         this.description = description;

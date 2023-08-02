@@ -4,7 +4,7 @@ import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.cartoon.ImageRepository;
-import com.petit.toon.repository.cartoon.ToonRepository;
+import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -33,7 +33,7 @@ public class ImageServiceTest {
     UserRepository userRepository;
 
     @Autowired
-    ToonRepository toonRepository;
+    CartoonRepository cartoonRepository;
 
     @Autowired
     ImageRepository imageRepository;
@@ -67,7 +67,7 @@ public class ImageServiceTest {
                 .description("sample")
                 .viewCount(0)
                 .build();
-        toonRepository.save(mockCartoon);
+        cartoonRepository.save(mockCartoon);
         createToonDirectory(mockCartoon.getId());
 
         MultipartFile file = new MockMultipartFile("sample1.png", "sample1.png", "multipart/form-data",

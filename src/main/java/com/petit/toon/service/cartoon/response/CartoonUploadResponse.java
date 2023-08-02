@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ToonUploadResponse {
+public class CartoonUploadResponse {
     private Long toonId;
 
-    public ToonUploadResponse(Long toonId) {
+    public CartoonUploadResponse(Long toonId) {
         this.toonId = toonId;
     }
 
-    public ToonUploadResponse(Cartoon cartoon) {
+    public CartoonUploadResponse(Cartoon cartoon) {
         this.toonId = cartoon.getId();
     }
 }

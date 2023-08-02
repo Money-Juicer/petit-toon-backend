@@ -1,6 +1,6 @@
 package com.petit.toon.controller.cartoon.request;
 
-import com.petit.toon.service.cartoon.request.ToonUploadServiceRequest;
+import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ToonUploadRequest {
+public class CartoonUploadRequest {
     @Positive
     private Long userId;
     @NotBlank
@@ -22,16 +22,16 @@ public class ToonUploadRequest {
     private List<MultipartFile> toonImages;
 
     @Builder
-    public ToonUploadRequest(Long userId, String title, String description,
-                             List<MultipartFile> toonImages) {
+    public CartoonUploadRequest(Long userId, String title, String description,
+                                List<MultipartFile> toonImages) {
         this.userId = userId;
         this.title = title;
         this.description = description;
         this.toonImages = toonImages;
     }
 
-    public ToonUploadServiceRequest toInput() {
-        return ToonUploadServiceRequest.builder()
+    public CartoonUploadServiceRequest toInput() {
+        return CartoonUploadServiceRequest.builder()
                 .userId(userId)
                 .title(title)
                 .description(description)

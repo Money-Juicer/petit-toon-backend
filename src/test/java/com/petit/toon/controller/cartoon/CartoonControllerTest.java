@@ -1,8 +1,8 @@
 package com.petit.toon.controller.cartoon;
 
 import com.petit.toon.controller.RestDocsSupport;
-import com.petit.toon.service.cartoon.ToonService;
-import com.petit.toon.service.cartoon.response.ToonUploadResponse;
+import com.petit.toon.service.cartoon.CartoonService;
+import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,12 +27,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = ToonController.class)
+@WebMvcTest(controllers = CartoonController.class)
 @ActiveProfiles("test")
-public class ToonControllerTest extends RestDocsSupport {
+public class CartoonControllerTest extends RestDocsSupport {
 
     @MockBean
-    ToonService toonService;
+    CartoonService cartoonService;
 
     String absolutePath;
 
@@ -46,7 +46,7 @@ public class ToonControllerTest extends RestDocsSupport {
     @DisplayName("웹툰 등록")
     void upload() throws Exception {
         //given
-        given(toonService.save(any())).willReturn(new ToonUploadResponse(1l));
+        given(cartoonService.save(any())).willReturn(new CartoonUploadResponse(1l));
 
         MockMultipartFile file1 = new MockMultipartFile("toonImages", "sample1.png", "multipart/form-data",
                 new FileInputStream(absolutePath + "/sample1.png"));
