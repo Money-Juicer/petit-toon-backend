@@ -52,13 +52,13 @@ public class ImageService {
         return images;
     }
 
-    public String makeThumbnail(MultipartFile multipartFile, Cartoon cartoon, String toonDirectory) throws IOException {
-        BufferedImage inputImage = ImageIO.read(multipartFile.getInputStream());
-        ;
+    public String makeThumbnail(File file, Cartoon cartoon, String toonDirectory) throws IOException {
+        BufferedImage inputImage = ImageIO.read(file);
+
         int width = inputImage.getWidth() / 5;
         int height = inputImage.getHeight() / 5;
 
-        String extension = extractExtension(multipartFile.getOriginalFilename());
+        String extension = extractExtension(file.getName());
         String fileName = cartoon.getId() + "-" + "thumb" + "." + extension;
         String thumbnailPath = getFullPath(fileName, cartoon.getId(), toonDirectory);
         File thumbnailFile = new File(thumbnailPath);
