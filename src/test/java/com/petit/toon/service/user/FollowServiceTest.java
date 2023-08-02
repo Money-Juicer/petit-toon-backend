@@ -1,8 +1,10 @@
 package com.petit.toon.service.user;
 
 import com.petit.toon.entity.user.Follow;
+import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.user.FollowRepository;
+import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.user.response.FollowResponse;
 import com.petit.toon.service.user.response.FollowUserListResponse;
@@ -22,9 +24,11 @@ import static org.assertj.core.api.Assertions.tuple;
 @SpringBootTest
 @ActiveProfiles("test")
 class FollowServiceTest {
-
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ProfileImageRepository profileImageRepository;
 
     @Autowired
     FollowRepository followRepository;
@@ -72,7 +76,7 @@ class FollowServiceTest {
 
         // then
         assertThat(followingUsers.getFollowUsers().size()).isEqualTo(2);
-        assertThat(followingUsers.getFollowUsers()).extracting("followId", "user.id", "user.name")
+        assertThat(followingUsers.getFollowUsers()).extracting("followId", "user.id", "user.nickname")
                 .contains(
                         tuple(follow1.getId(), user2.getId(), "이용우"),
                         tuple(follow2.getId(), user3.getId(), "김승환")
@@ -105,11 +109,14 @@ class FollowServiceTest {
                         .build());
     }
 
-    private User createUser(String name) {
-        return userRepository.save(
+    private User createUser(String nickname) {
+        ProfileImage defaultImage = profileImageRepository.findById(ProfileImageService.DEFAULT_PROFILE_IMAGE_ID).get();
+        User user = userRepository.save(
                 User.builder()
-                        .name(name)
+                        .nickname(nickname)
                         .build());
+        user.setProfileImage(defaultImage);
+        return userRepository.save(user);
     }
 
 }

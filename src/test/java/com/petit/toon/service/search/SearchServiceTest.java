@@ -1,10 +1,13 @@
 package com.petit.toon.service.search;
 
 import com.petit.toon.entity.cartoon.Cartoon;
+import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
-import com.petit.toon.repository.cartoon.ToonRepository;
+import com.petit.toon.repository.cartoon.CartoonRepository;
+import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.search.response.SearchResponse;
+import com.petit.toon.service.user.ProfileImageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 @ActiveProfiles("test")
 class SearchServiceTest {
-
     @Autowired
     SearchService searchService;
 
@@ -27,7 +29,10 @@ class SearchServiceTest {
     UserRepository userRepository;
 
     @Autowired
-    ToonRepository toonRepository;
+    ProfileImageRepository profileImageRepository;
+
+    @Autowired
+    CartoonRepository cartoonRepository;
 
     @Test
     @DisplayName("keyword로 유저 정보와 만화 정보를 검색한다")
@@ -54,7 +59,7 @@ class SearchServiceTest {
     }
 
     private Cartoon createToon(User user, String title, String description) {
-        return toonRepository.save(Cartoon.builder()
+        return cartoonRepository.save(Cartoon.builder()
                 .user(user)
                 .title(title)
                 .description(description)
@@ -62,9 +67,12 @@ class SearchServiceTest {
     }
 
     private User createUser(String name, String nickname) {
-        return userRepository.save(User.builder()
+        ProfileImage defaultImage = profileImageRepository.findById(ProfileImageService.DEFAULT_PROFILE_IMAGE_ID).get();
+        User user = userRepository.save(User.builder()
                 .name(name)
                 .nickname(nickname)
                 .build());
+        user.setProfileImage(defaultImage);
+        return userRepository.save(user);
     }
 }

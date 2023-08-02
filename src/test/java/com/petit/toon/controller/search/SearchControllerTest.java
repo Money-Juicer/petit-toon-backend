@@ -61,12 +61,10 @@ class SearchControllerTest extends RestDocsSupport {
                                         .description("유저 정보 목록 데이터"),
                                 fieldWithPath("users[].id").type(JsonFieldType.NUMBER)
                                         .description("유저 ID"),
-                                fieldWithPath("users[].name").type(JsonFieldType.STRING)
-                                        .description("유저 이름"),
                                 fieldWithPath("users[].nickname").type(JsonFieldType.STRING)
                                         .description("유저 닉네임"),
-                                fieldWithPath("users[].profileImageId").type(JsonFieldType.NUMBER)
-                                        .description("유저 프로필 이미지 ID"),
+                                fieldWithPath("users[].profileImagePath").type(JsonFieldType.STRING)
+                                        .description("유저 프로필 이미지 경로"),
                                 fieldWithPath("toons[]").type(JsonFieldType.ARRAY)
                                         .description("만화 정보 목록 데이터"),
                                 fieldWithPath("toons[].id").type(JsonFieldType.NUMBER)
@@ -77,6 +75,8 @@ class SearchControllerTest extends RestDocsSupport {
                                         .description("만화 설명"),
                                 fieldWithPath("toons[].author").type(JsonFieldType.STRING)
                                         .description("작가 이름"),
+                                fieldWithPath("toons[].profileImageUrl").type(JsonFieldType.STRING)
+                                        .description("작가 프로필 이미지 경로"),
                                 fieldWithPath("toons[].thumbnailUrl").type(JsonFieldType.STRING)
                                         .description("만화 썸네일 url")
                         )
@@ -110,6 +110,7 @@ class SearchControllerTest extends RestDocsSupport {
                 .title(title)
                 .description(description)
                 .author(author)
+                .profileImageUrl("profile-image-url")
                 .thumbnailUrl("localhost:8080/static/" + id + "-0.png")
                 .build();
     }
@@ -117,8 +118,8 @@ class SearchControllerTest extends RestDocsSupport {
     private UserResponse createUser(long id, String name, String nickname) {
         return UserResponse.builder()
                 .id(id)
-                .name(name)
                 .nickname(nickname)
+                .profileImagePath("profile-image-path")
                 .build();
     }
 

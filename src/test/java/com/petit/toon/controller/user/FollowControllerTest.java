@@ -58,8 +58,8 @@ class FollowControllerTest extends RestDocsSupport {
     @DisplayName("팔로우 목록 조회 API")
     void getFollowingUsers() throws Exception {
         // given
-        UserResponse userResponse1 = createUser(1l, "김지훈", "@Hotoran");
-        UserResponse userResponse2 = createUser(2l, "이용우", "@timel2ss");
+        UserResponse userResponse1 = createUser(1l, "@Hotoran");
+        UserResponse userResponse2 = createUser(2l, "@timel2ss");
 
         FollowUserResponse followResponse1 = createFollow(1l, userResponse1);
         FollowUserResponse followResponse2 = createFollow(2l, userResponse2);
@@ -92,12 +92,10 @@ class FollowControllerTest extends RestDocsSupport {
                                         .description("유저 정보"),
                                 fieldWithPath("followUsers[].user.id").type(JsonFieldType.NUMBER)
                                         .description("유저 ID"),
-                                fieldWithPath("followUsers[].user.name").type(JsonFieldType.STRING)
-                                        .description("유저 이름"),
                                 fieldWithPath("followUsers[].user.nickname").type(JsonFieldType.STRING)
                                         .description("유저 닉네임"),
-                                fieldWithPath("followUsers[].user.profileImageId").type(JsonFieldType.NUMBER)
-                                        .description("유저 프로필 이미지 ID")
+                                fieldWithPath("followUsers[].user.profileImagePath").type(JsonFieldType.STRING)
+                                        .description("유저 프로필 이미지 경로")
                         )
                 ));
     }
@@ -122,11 +120,11 @@ class FollowControllerTest extends RestDocsSupport {
                 .build();
     }
 
-    private UserResponse createUser(long id, String name, String nickname) {
+    private UserResponse createUser(long id, String nickname) {
         return UserResponse.builder()
                 .id(id)
-                .name(name)
                 .nickname(nickname)
+                .profileImagePath("sample-profile-image-url")
                 .build();
     }
 }
