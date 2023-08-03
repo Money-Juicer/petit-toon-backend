@@ -23,3 +23,8 @@ include::api/cartoon/toon.adoc[]
 == Search API
 
 include::api/search/search.adoc[]
+
+[[Like-API]]
+== Like API
+
+include::api/cartoon/like.adoc[]

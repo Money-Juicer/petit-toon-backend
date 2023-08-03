@@ -1,0 +1,23 @@
+[[like]]
+=== 좋아요
+
+==== HTTP Request
+
+include::{snippets}/like/http-request.adoc[]
+include::{snippets}/like/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/like/http-response.adoc[]
+
+[[dislike]]
+=== 싫어요
+
+==== HTTP Request
+
+include::{snippets}/dislike/http-request.adoc[]
+include::{snippets}/dislike/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/dislike/http-response.adoc[]
