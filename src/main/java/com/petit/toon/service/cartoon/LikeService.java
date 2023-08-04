@@ -77,14 +77,12 @@ public class LikeService {
     }
 
     private void loadLikesFromDB(String key, long toonId) {
-        likeRepository.findAllByCartoonId(toonId).forEach(
-                like -> redisUtil.setBit(key, like.getUser().getId(), true)
-        );
+        likeRepository.findUserIdByCartoonId(toonId)
+                .forEach(userId -> redisUtil.setBit(key, userId, true));
     }
 
     private void loadDislikesFromDB(String key, long toonId) {
-        dislikeRepository.findByCartoonId(toonId).forEach(
-                dislike -> redisUtil.setBit(key, dislike.getUser().getId(), true)
-        );
+        dislikeRepository.findUserIdByCartoonId(toonId)
+                .forEach(userId -> redisUtil.setBit(key, userId, true));
     }
 }

@@ -42,7 +42,7 @@ public class RedisUtil {
     public boolean getBit(String key, long id) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         Boolean result = valueOperations.getBit(key, id);
-        redisTemplate.expire(key, 7, TimeUnit.DAYS);
+        redisTemplate.expire(key, DEFAULT_TIMEOUT, TimeUnit.DAYS);
         return result;
     }
 
