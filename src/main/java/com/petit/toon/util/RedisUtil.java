@@ -1,4 +1,4 @@
-package com.petit.toon.repository.util;
+package com.petit.toon.util;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisCallback;

@@ -8,7 +8,7 @@ import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.cartoon.DislikeRepository;
 import com.petit.toon.repository.cartoon.LikeRepository;
 import com.petit.toon.repository.user.UserRepository;
-import com.petit.toon.repository.util.RedisUtil;
+import com.petit.toon.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

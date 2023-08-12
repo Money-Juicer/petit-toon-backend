@@ -2,7 +2,7 @@ package com.petit.toon.service.cartoon;
 
 import com.petit.toon.repository.cartoon.DislikeRepository;
 import com.petit.toon.repository.cartoon.LikeRepository;
-import com.petit.toon.repository.util.RedisUtil;
+import com.petit.toon.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

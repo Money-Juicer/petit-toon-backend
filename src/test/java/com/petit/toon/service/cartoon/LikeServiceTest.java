@@ -6,7 +6,7 @@ import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.cartoon.LikeRepository;
 import com.petit.toon.repository.user.UserRepository;
-import com.petit.toon.repository.util.RedisUtil;
+import com.petit.toon.util.RedisUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
