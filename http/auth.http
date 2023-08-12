@@ -1,0 +1,44 @@
+POST localhost:8080/api/v1/signup
+Content-Type: application/json
+
+{
+  "name": "sample-name",
+  "nickname": "sample-nickname",
+  "email": "sample@email.com",
+  "password": "samplePW123!@#"
+}
+
+###
+
+POST localhost:8080/api/v1/login
+Content-Type: application/json
+X-Forwarded-For: 128.0.0.1
+
+{
+  "email": "sample@email.com",
+  "password": "samplePW123!@#"
+}
+
+> {%
+  client.global.set("accessToken", "Bearer " + response.body.accessToken);
+  client.global.set("refreshToken", response.body.refreshToken);
+  client.log("access token: {}", client.global.get("accessToken"));
+  client.log("refresh token: {}", client.global.get("refreshToken"));
+%}
+
+###
+
+POST localhost:8080/api/v1/token/reissue
+Content-Type: application/json
+X-Forwarded-For: 128.0.0.1
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+  client.global.set("accessToken", "Bearer " + response.body.accessToken);
+  client.global.set("refreshToken", response.body.refreshToken);
+  client.log("access token: {}", client.global.get("accessToken"));
+  client.log("refresh token: {}", client.global.get("refreshToken"));
+%}

@@ -11,3 +11,13 @@ INSERT INTO FOLLOW(follower_id, followee_id)
 values (1, 2),
        (1, 3),
        (1, 4);
+
+INSERT INTO AUTHORITY(authority_name)
+values ('USER'),
+       ('ADMIN');
+
+INSERT INTO USER_AUTHORITIES(user_id, authority_id)
+values (1, 2),
+       (2, 2),
+       (3, 2),
+       (4, 2);
