@@ -28,3 +28,13 @@ include::api/search/search.adoc[]
 == Like API
 
 include::api/cartoon/like.adoc[]
+
+[[Auth-API]]
+== Authentication API
+
+include::api/user/auth.adoc[]
+
+[[User-API]]
+== User API
+
+include::api/user/user.adoc[]

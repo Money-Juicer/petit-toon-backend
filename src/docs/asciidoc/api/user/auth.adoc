@@ -1,0 +1,25 @@
+[[auth-login]]
+=== 로그인
+
+==== HTTP Request
+
+include::{snippets}/auth-login/http-request.adoc[]
+include::{snippets}/auth-login/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/auth-login/http-response.adoc[]
+include::{snippets}/auth-login/response-fields.adoc[]
+
+[[auth-reissue]]
+=== 토큰 재발행
+
+==== HTTP Request
+
+include::{snippets}/auth-reissue/http-request.adoc[]
+include::{snippets}/auth-reissue/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/auth-reissue/http-response.adoc[]
+include::{snippets}/auth-reissue/response-fields.adoc[]
