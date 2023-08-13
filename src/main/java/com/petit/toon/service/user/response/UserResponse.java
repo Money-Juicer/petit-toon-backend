@@ -9,20 +9,27 @@ public class UserResponse {
 
     private long id;
     private String nickname;
+    private String tag;
     private String profileImagePath;
+    private String statusMessage;
 
     @Builder
-    private UserResponse(long id, String nickname, String profileImagePath) {
+    private UserResponse(long id, String nickname, String tag,
+                         String profileImagePath, String statusMessage) {
         this.id = id;
         this.nickname = nickname;
+        this.tag = tag;
         this.profileImagePath = profileImagePath;
+        this.statusMessage = statusMessage;
     }
 
     public static UserResponse of(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .nickname(user.getNickname())
+                .tag(user.getTag())
                 .profileImagePath(user.getProfileImage().getPath())
+                .statusMessage(user.getStatusMessage())
                 .build();
     }
 }

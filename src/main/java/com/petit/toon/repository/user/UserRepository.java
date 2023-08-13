@@ -12,4 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserById(long userId);
 
     List<User> findAllByIdIn(List<Long> ids);
+
+    @Query("select exists (select u from User u where u.tag = :tag)")
+    boolean existsByTag(String tag);
 }
