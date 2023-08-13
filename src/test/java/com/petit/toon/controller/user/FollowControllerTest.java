@@ -58,8 +58,8 @@ class FollowControllerTest extends RestDocsSupport {
     @DisplayName("팔로우 목록 조회 API")
     void getFollowingUsers() throws Exception {
         // given
-        UserResponse userResponse1 = createUser(1l, "@Hotoran");
-        UserResponse userResponse2 = createUser(2l, "@timel2ss");
+        UserResponse userResponse1 = createUser(1l, "zl존", "@Hotoran");
+        UserResponse userResponse2 = createUser(2l, "DrangeWoo", "@timel2ss");
 
         FollowUserResponse followResponse1 = createFollow(1l, userResponse1);
         FollowUserResponse followResponse2 = createFollow(2l, userResponse2);
@@ -94,8 +94,12 @@ class FollowControllerTest extends RestDocsSupport {
                                         .description("유저 ID"),
                                 fieldWithPath("followUsers[].user.nickname").type(JsonFieldType.STRING)
                                         .description("유저 닉네임"),
+                                fieldWithPath("followUsers[].user.tag").type(JsonFieldType.STRING)
+                                        .description("유저 태그"),
                                 fieldWithPath("followUsers[].user.profileImagePath").type(JsonFieldType.STRING)
-                                        .description("유저 프로필 이미지 경로")
+                                        .description("유저 프로필 이미지 경로"),
+                                fieldWithPath("followUsers[].user.statusMessage").type(JsonFieldType.STRING)
+                                        .description("유저 상태메시지")
                         )
                 ));
     }
@@ -120,11 +124,13 @@ class FollowControllerTest extends RestDocsSupport {
                 .build();
     }
 
-    private UserResponse createUser(long id, String nickname) {
+    private UserResponse createUser(long id, String nickname, String tag) {
         return UserResponse.builder()
                 .id(id)
                 .nickname(nickname)
+                .tag(tag)
                 .profileImagePath("sample-profile-image-url")
+                .statusMessage("sample-message")
                 .build();
     }
 }
