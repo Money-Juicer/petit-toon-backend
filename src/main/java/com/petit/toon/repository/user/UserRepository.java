@@ -13,6 +13,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByIdIn(List<Long> ids);
 
-    @Query("select exists (select u from User u where u.tag = :tag)")
-    boolean existsByTag(String tag);
+    Optional<User> findByTag(String tag);
 }
