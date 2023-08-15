@@ -26,12 +26,16 @@ public class User {
 
     private String nickname;
 
+    private String tag;
+
     private String email;
 
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private ProfileImage profileImage;
+
+    private String statusMessage;
 
     @ManyToMany
     @JoinTable(
@@ -48,11 +52,13 @@ public class User {
     private LocalDateTime modifiedDateTime;
 
     @Builder
-    private User(String name, String nickname, String email, String password) {
+    private User(String name, String nickname, String tag, String email, String password, String statusMessage) {
         this.name = name;
         this.nickname = nickname;
+        this.tag = tag;
         this.email = email;
         this.password = password;
+        this.statusMessage = statusMessage;
     }
 
     public void setProfileImage(ProfileImage profileImage) {
