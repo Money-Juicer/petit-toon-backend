@@ -22,19 +22,23 @@ public class SignupRequest {
     @Length(max = 20)
     private String nickname;
 
-//    tag가 중복이 있는지 검증하는 프론트에게 api를 제공해야 하나요? signup // tag validation apis
+    @NotBlank
+    @Pattern(regexp = "^[A-Za-z\\d_.]{1,15}$")
+    private String tag;
 
     @Email
     @NotBlank
     private String email;
 
+    @NotBlank
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*~?])[A-Za-z\\d!@#$%^&*~?]{8,20}$")
     private String password;
 
     @Builder
-    private SignupRequest(String name, String nickname, String email, String password) {
+    private SignupRequest(String name, String nickname, String tag, String email, String password) {
         this.name = name;
         this.nickname = nickname;
+        this.tag = tag;
         this.email = email;
         this.password = password;
     }
@@ -43,6 +47,7 @@ public class SignupRequest {
         return SignupServiceRequest.builder()
                 .name(name)
                 .nickname(nickname)
+                .tag(tag)
                 .email(email)
                 .password(password)
                 .build();

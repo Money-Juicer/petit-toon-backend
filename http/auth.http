@@ -4,6 +4,7 @@ Content-Type: application/json
 {
   "name": "sample-name",
   "nickname": "sample-nickname",
+  "tag": "sample_tag",
   "email": "sample@email.com",
   "password": "samplePW123!@#"
 }

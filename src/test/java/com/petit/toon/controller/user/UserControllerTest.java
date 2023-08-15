@@ -51,6 +51,7 @@ class UserControllerTest extends RestDocsSupport {
         SignupRequest request = SignupRequest.builder()
                 .name("sample_name")
                 .nickname("sample_nickname")
+                .tag("sample_tag")
                 .email("sample@email.com")
                 .password("!@#sAmple1234")
                 .build();
@@ -68,6 +69,8 @@ class UserControllerTest extends RestDocsSupport {
                                         .description("이름 (20자 이내)"),
                                 fieldWithPath("nickname").type(JsonFieldType.STRING)
                                         .description("닉네임 (20자 이내)"),
+                                fieldWithPath("tag").type(JsonFieldType.STRING)
+                                        .description("태그 (15자 이내, 영문, 특수문자(_.) 허용"),
                                 fieldWithPath("email").type(JsonFieldType.STRING)
                                         .description("이메일 주소 (이메일 형식)"),
                                 fieldWithPath("password").type(JsonFieldType.STRING)

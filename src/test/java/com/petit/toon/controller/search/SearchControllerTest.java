@@ -35,7 +35,7 @@ class SearchControllerTest extends RestDocsSupport {
     @DisplayName("검색 API")
     void search() throws Exception {
         // given
-        UserResponse user1 = createUser(1l, "김승환", "김영현 광팬");
+        UserResponse user1 = createUser(1l, "김승환", "김영현 광팬", "@chocoSongEE");
 
         CartoonResponse toon1 = createToon(1l, "김영현의 모험", "용사 김영현이 모험을 떠난다", user1.getNickname());
         CartoonResponse toon2 = createToon(3l, "용사 김영현", "김영현의 모험 2탄", user1.getNickname());
@@ -63,8 +63,12 @@ class SearchControllerTest extends RestDocsSupport {
                                         .description("유저 ID"),
                                 fieldWithPath("users[].nickname").type(JsonFieldType.STRING)
                                         .description("유저 닉네임"),
+                                fieldWithPath("users[].tag").type(JsonFieldType.STRING)
+                                        .description("유저 태그"),
                                 fieldWithPath("users[].profileImagePath").type(JsonFieldType.STRING)
                                         .description("유저 프로필 이미지 경로"),
+                                fieldWithPath("users[].statusMessage").type(JsonFieldType.STRING)
+                                        .description("유저 상태메시지"),
                                 fieldWithPath("toons[]").type(JsonFieldType.ARRAY)
                                         .description("만화 정보 목록 데이터"),
                                 fieldWithPath("toons[].id").type(JsonFieldType.NUMBER)
@@ -87,7 +91,7 @@ class SearchControllerTest extends RestDocsSupport {
     @DisplayName("검색 API - 입력값 검증 실패 케이스")
     void searchBadRequest() throws Exception {
         // given
-        UserResponse user1 = createUser(1l, "김승환", "김영현 광팬");
+        UserResponse user1 = createUser(1l, "김승환", "김영현 광팬", "@chocoSongEE");
 
         CartoonResponse toon1 = createToon(1l, "김영현의 모험", "용사 김영현이 모험을 떠난다", user1.getNickname());
         CartoonResponse toon2 = createToon(3l, "용사 김영현", "김영현의 모험 2탄", user1.getNickname());
@@ -115,11 +119,13 @@ class SearchControllerTest extends RestDocsSupport {
                 .build();
     }
 
-    private UserResponse createUser(long id, String name, String nickname) {
+    private UserResponse createUser(long id, String name, String nickname, String tag) {
         return UserResponse.builder()
                 .id(id)
                 .nickname(nickname)
+                .tag(tag)
                 .profileImagePath("profile-image-path")
+                .statusMessage("sample-status-message")
                 .build();
     }
 
