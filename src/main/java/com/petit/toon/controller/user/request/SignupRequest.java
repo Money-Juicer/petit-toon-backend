@@ -31,7 +31,7 @@ public class SignupRequest {
     private String email;
 
     @NotBlank
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*~?])[A-Za-z\\d!@#$%^&*~?]{8,20}$")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*\\d)(?=.*[!@#$%^&*~?])[A-Za-z\\d!@#$%^&*~?]{8,20}$")
     private String password;
 
     @Builder

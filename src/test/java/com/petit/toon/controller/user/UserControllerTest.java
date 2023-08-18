@@ -74,7 +74,7 @@ class UserControllerTest extends RestDocsSupport {
                                 fieldWithPath("email").type(JsonFieldType.STRING)
                                         .description("이메일 주소 (이메일 형식)"),
                                 fieldWithPath("password").type(JsonFieldType.STRING)
-                                        .description("비밀번호 (8자 이상, 20자 이내, 영어 소문자/대문자/숫자/특수문자(!@#$%^&*~?) 1개 이상 포함)")
+                                        .description("비밀번호 (8자 이상, 20자 이내, 영어 소문자/숫자/특수문자(!@#$%^&*~?) 1개 이상 포함)")
                         ),
                         responseFields(
                                 fieldWithPath("userId").type(JsonFieldType.NUMBER)
