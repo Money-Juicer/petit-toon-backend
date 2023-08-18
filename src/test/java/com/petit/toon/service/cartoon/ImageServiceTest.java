@@ -80,12 +80,12 @@ public class ImageServiceTest {
 
         //then
         assertThat(img1.getFileName()).isEqualTo(img1.getCartoon().getId() + "-0.png");
-        assertThat(img1.getPath()).isEqualTo("toons\\" + mockCartoon.getId() + "\\" + img1.getCartoon().getId() + "-0.png");
+        assertThat(img1.getPath()).isEqualTo("toons" + File.separator + mockCartoon.getId() + File.separator + img1.getCartoon().getId() + "-0.png");
         assertThat(img1.getOriginalFileName()).isEqualTo("sample1.png");
         assertThat(img1.getCartoon()).isEqualTo(mockCartoon);
 
         assertThat(img2.getFileName()).isEqualTo(img1.getCartoon().getId() + "-1.png");
-        assertThat(img2.getPath()).isEqualTo("toons\\" + mockCartoon.getId() + "\\" + img1.getCartoon().getId() + "-1.png");
+        assertThat(img2.getPath()).isEqualTo("toons" + File.separator + mockCartoon.getId() + File.separator + img1.getCartoon().getId() + "-1.png");
         assertThat(img2.getOriginalFileName()).isEqualTo("sample1.png");
         assertThat(img2.getCartoon()).isEqualTo(mockCartoon);
     }

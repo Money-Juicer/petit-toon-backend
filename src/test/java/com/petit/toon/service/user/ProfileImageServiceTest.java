@@ -82,14 +82,14 @@ class ProfileImageServiceTest {
 
         assertThat(profileImage1.getFileName()).isEqualTo(response1.getProfileImageId() + ".png");
         assertThat(profileImage1.getOriginFileName()).isEqualTo("sample1.png");
-        assertThat(profileImage1.getPath()).isEqualTo("profileImages\\" + response1.getProfileImageId() + ".png");
+        assertThat(profileImage1.getPath()).isEqualTo("profileImages" + File.separator + response1.getProfileImageId() + ".png");
 
         user1 = userRepository.findUserById(user1.getId()).get(); // fetch join
         assertThat(user1.getProfileImage()).isEqualTo(profileImage1);
 
         assertThat(profileImage2.getFileName()).isEqualTo(response2.getProfileImageId() + ".png");
         assertThat(profileImage2.getOriginFileName()).isEqualTo("sample2.png");
-        assertThat(profileImage2.getPath()).isEqualTo("profileImages\\" + response2.getProfileImageId() + ".png");
+        assertThat(profileImage2.getPath()).isEqualTo("profileImages" + File.separator + response2.getProfileImageId() + ".png");
 
         user2 = userRepository.findUserById(user2.getId()).get();
         assertThat(user2.getProfileImage()).isEqualTo(profileImage2);
