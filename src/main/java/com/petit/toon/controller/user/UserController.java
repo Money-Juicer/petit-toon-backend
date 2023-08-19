@@ -9,7 +9,9 @@ import com.petit.toon.service.user.request.LoginServiceRequest;
 import com.petit.toon.service.user.request.ReissueServiceRequest;
 import com.petit.toon.service.user.response.AuthResponse;
 import com.petit.toon.service.user.response.SignupResponse;
+import com.petit.toon.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,18 +23,26 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.petit.toon.security.JwtTokenProvider.ACCESS_TOKEN_VALID_TIME_MILLISECONDS;
+import static com.petit.toon.security.JwtTokenProvider.REFRESH_TOKEN_VALID_TIME_MILLISECONDS;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final AuthService authService;
+    private final CookieUtil cookieUtil;
 
     @PostMapping("/api/v1/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request,
-                                              HttpServletRequest httpRequest) {
+                                              HttpServletRequest httpRequest,
+                                              HttpServletResponse httpResponse) {
         LoginServiceRequest serviceRequest = request.toServiceRequest(getClientIp(httpRequest));
-        return ResponseEntity.ok(authService.authenticate(serviceRequest));
+        AuthResponse response = authService.authenticate(serviceRequest);
+        cookieUtil.add(httpResponse, "accessToken", response.getAccessToken(), (int) ACCESS_TOKEN_VALID_TIME_MILLISECONDS);
+        cookieUtil.add(httpResponse, "refreshToken", response.getRefreshToken(), (int) REFRESH_TOKEN_VALID_TIME_MILLISECONDS);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/api/v1/signup")
