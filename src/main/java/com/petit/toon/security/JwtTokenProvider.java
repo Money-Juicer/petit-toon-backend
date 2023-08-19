@@ -1,4 +1,4 @@
-package com.petit.toon.util;
+package com.petit.toon.security;
 
 import com.petit.toon.security.CustomUserDetailsService;
 import io.jsonwebtoken.*;
@@ -23,14 +23,14 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JwtUtil {
-    private static final long ACCESS_TOKEN_VALID_TIME = TimeUnit.MINUTES.toMillis(30);
-    private static final long REFRESH_TOKEN_VALID_TIME = TimeUnit.DAYS.toMillis(7);
+public class JwtTokenProvider {
+    public static final long ACCESS_TOKEN_VALID_TIME_MILLISECONDS = TimeUnit.MINUTES.toMillis(30);
+    public static final long REFRESH_TOKEN_VALID_TIME_MILLISECONDS = TimeUnit.DAYS.toMillis(7);
 
     private CustomUserDetailsService userDetailsService;
 
     @Autowired
-    public JwtUtil(CustomUserDetailsService userDetailsService) {
+    public JwtTokenProvider(CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
@@ -45,19 +45,19 @@ public class JwtUtil {
     }
 
     public String createAccessToken(Authentication authentication) {
-        return generateToken(authentication, ACCESS_TOKEN_VALID_TIME);
+        return generateToken(authentication, ACCESS_TOKEN_VALID_TIME_MILLISECONDS);
     }
 
     public String createAccessToken(String email) {
-        return generateToken(email, ACCESS_TOKEN_VALID_TIME);
+        return generateToken(email, ACCESS_TOKEN_VALID_TIME_MILLISECONDS);
     }
 
     public String createRefreshToken(Authentication authentication) {
-        return generateToken(authentication, REFRESH_TOKEN_VALID_TIME);
+        return generateToken(authentication, REFRESH_TOKEN_VALID_TIME_MILLISECONDS);
     }
 
     public String createRefreshToken(String email) {
-        return generateToken(email, REFRESH_TOKEN_VALID_TIME);
+        return generateToken(email, REFRESH_TOKEN_VALID_TIME_MILLISECONDS);
     }
 
     public Authentication getAuthentication(String token) {

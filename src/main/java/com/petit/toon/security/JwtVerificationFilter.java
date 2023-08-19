@@ -1,6 +1,5 @@
 package com.petit.toon.security;
 
-import com.petit.toon.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,13 +20,13 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
 
-    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Optional<String> accessToken = parseTokenFromHeader(request);
-        if (accessToken.isPresent() && jwtUtil.validateToken(accessToken.get())) {
-            Authentication authentication = jwtUtil.getAuthentication(accessToken.get());
+        if (accessToken.isPresent() && jwtTokenProvider.validateToken(accessToken.get())) {
+            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken.get());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);

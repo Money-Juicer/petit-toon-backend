@@ -5,7 +5,7 @@ import com.petit.toon.repository.token.RefreshTokenRepository;
 import com.petit.toon.service.user.request.LoginServiceRequest;
 import com.petit.toon.service.user.request.ReissueServiceRequest;
 import com.petit.toon.service.user.response.AuthResponse;
-import com.petit.toon.util.JwtUtil;
+import com.petit.toon.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,7 +18,7 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AuthService {
-    private final JwtUtil jwtUtil;
+    private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManager authenticationManager;
 
@@ -28,8 +28,8 @@ public class AuthService {
 
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-        String accessToken = jwtUtil.createAccessToken(authentication);
-        String refreshToken = jwtUtil.createRefreshToken(authentication);
+        String accessToken = jwtTokenProvider.createAccessToken(authentication);
+        String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
         saveRefreshToken(authentication, refreshToken, request.getClientIp());
         return AuthResponse.builder()
@@ -40,7 +40,7 @@ public class AuthService {
 
     public AuthResponse reissueToken(ReissueServiceRequest request) {
         String refreshToken = request.getRefreshToken();
-        if (!(StringUtils.hasText(refreshToken) && jwtUtil.validateToken(refreshToken))) {
+        if (!(StringUtils.hasText(refreshToken) && jwtTokenProvider.validateToken(refreshToken))) {
             throw new RuntimeException("유효하지 않거나 만료된 토큰입니다.");
         }
 
@@ -50,7 +50,7 @@ public class AuthService {
             throw new RuntimeException("잘못된 접근입니다. 다시 로그인하세요.");
         }
 
-        String accessToken = jwtUtil.createAccessToken(jwtUtil.getUsername(refreshToken));
+        String accessToken = jwtTokenProvider.createAccessToken(jwtTokenProvider.getUsername(refreshToken));
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

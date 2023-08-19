@@ -7,7 +7,7 @@ import com.petit.toon.security.CustomUserDetails;
 import com.petit.toon.service.user.request.LoginServiceRequest;
 import com.petit.toon.service.user.request.ReissueServiceRequest;
 import com.petit.toon.service.user.response.AuthResponse;
-import com.petit.toon.util.JwtUtil;
+import com.petit.toon.security.JwtTokenProvider;
 import com.petit.toon.util.RedisUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,7 +46,7 @@ class AuthServiceTest {
     RefreshTokenRepository refreshTokenRepository;
 
     @SpyBean
-    JwtUtil jwtUtil;
+    JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     RedisUtil redisUtil;
@@ -96,13 +96,13 @@ class AuthServiceTest {
         refreshTokenRepository.save(refreshToken);
 
         doReturn(true)
-                .when(jwtUtil)
+                .when(jwtTokenProvider)
                 .validateToken(anyString());
         doReturn("sample@email.com")
-                .when(jwtUtil)
+                .when(jwtTokenProvider)
                 .getUsername(anyString());
         doReturn("accessTokenData")
-                .when(jwtUtil)
+                .when(jwtTokenProvider)
                 .createAccessToken(anyString());
 
         ReissueServiceRequest request = ReissueServiceRequest.builder()
@@ -145,7 +145,7 @@ class AuthServiceTest {
         refreshTokenRepository.save(refreshToken);
 
         doReturn(true)
-                .when(jwtUtil)
+                .when(jwtTokenProvider)
                 .validateToken(anyString());
 
         ReissueServiceRequest request = ReissueServiceRequest.builder()
