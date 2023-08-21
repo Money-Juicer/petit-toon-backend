@@ -30,7 +30,7 @@ public class CollectionService {
      * Collection 생성 서비스
      */
     public CollectionResponse createCollection(long userId, String title, boolean closed) {
-        User user = userRepository.findUserById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
 
         Collection savedCollection = collectionRepository.save(Collection.builder()
@@ -49,7 +49,7 @@ public class CollectionService {
         Collection collection = collectionRepository.findById(collectionId)
                 .orElseThrow(() -> new RuntimeException("Collection not found. id: " + collectionId));
 
-        Cartoon cartoon = cartoonRepository.findCartoonById(cartoonId)
+        Cartoon cartoon = cartoonRepository.findById(cartoonId)
                 .orElseThrow(() -> new RuntimeException("Cartoon not found. id: " + cartoonId));
 
         Bookmark bookmark = bookmarkRepository.save(Bookmark.builder()
