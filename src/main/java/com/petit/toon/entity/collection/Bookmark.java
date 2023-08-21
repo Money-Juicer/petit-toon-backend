@@ -1,6 +1,6 @@
-package com.petit.toon.entity.cartoon;
+package com.petit.toon.entity.collection;
 
-import com.petit.toon.entity.user.User;
+import com.petit.toon.entity.cartoon.Cartoon;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,14 +17,14 @@ public class Bookmark {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private Collection collection;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Cartoon cartoon;
 
     @Builder
-    private Bookmark(User user, Cartoon cartoon) {
-        this.user = user;
+    private Bookmark(Collection collection, Cartoon cartoon) {
+        this.collection = collection;
         this.cartoon = cartoon;
     }
 }
