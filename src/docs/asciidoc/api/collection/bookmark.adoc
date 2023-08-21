@@ -1,0 +1,40 @@
+[[bookmark-create]]
+=== 북마크 생성
+
+==== HTTP Request
+
+include::{snippets}/bookmark-create/http-request.adoc[]
+include::{snippets}/bookmark-create/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/bookmark-create/http-response.adoc[]
+include::{snippets}/bookmark-create/response-fields.adoc[]
+
+[[bookmark-delete]]
+=== 북마크 삭제
+
+==== HTTP Request
+
+include::{snippets}/bookmark-delete/http-request.adoc[]
+include::{snippets}/bookmark-delete/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/bookmark-delete/http-response.adoc[]
+
+[[bookmark-list]]
+=== 북마크 리스트 조회
+
+==== HTTP Request
+
+include::{snippets}/bookmark-list/http-request.adoc[]
+include::{snippets}/bookmark-list/path-parameters.adoc[]
+
+====== Query Parameters
+include::{snippets}/bookmark-list/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/bookmark-list/http-response.adoc[]
+include::{snippets}/bookmark-list/response-fields.adoc[]

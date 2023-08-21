@@ -24,6 +24,13 @@ include::api/cartoon/toon.adoc[]
 
 include::api/search/search.adoc[]
 
+[[Collection-API]]
+== Collection API
+include::api/collection/collection.adoc[]
+
+== Bookmark API
+include::api/collection/bookmark.adoc[]
+
 [[Like-API]]
 == Like API
 

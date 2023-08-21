@@ -1,0 +1,37 @@
+[[collection-create]]
+=== 컬렉션 생성
+
+==== HTTP Request
+
+include::{snippets}/collection-create/http-request.adoc[]
+include::{snippets}/collection-create/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/collection-create/http-response.adoc[]
+include::{snippets}/collection-create/response-fields.adoc[]
+
+[[collection-delete]]
+=== 컬렉션 삭제
+
+==== HTTP Request
+
+include::{snippets}/collection-delete/http-request.adoc[]
+include::{snippets}/collection-delete/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/collection-delete/http-response.adoc[]
+
+[[collection-list]]
+=== 컬렉션 리스트 조회
+
+==== HTTP Request
+
+include::{snippets}/collection-list/http-request.adoc[]
+include::{snippets}/collection-list/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/collection-list/http-response.adoc[]
+include::{snippets}/collection-list/response-fields.adoc[]
