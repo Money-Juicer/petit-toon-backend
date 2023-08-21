@@ -1,0 +1,56 @@
+POST http://localhost:8080/api/v1/collection/create
+Authorization: {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "공개 컬렉션",
+  "closed": "false"
+}
+
+###
+
+POST http://localhost:8080/api/v1/collection/create
+Authorization: {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "비공개 컬렉션",
+  "closed": "true"
+}
+
+###
+
+GET http://localhost:8080/api/v1/collection/author/1
+Authorization: {{accessToken}}
+
+###
+
+GET http://localhost:8080/api/v1/collection/author/5
+Authorization: {{accessToken}}
+
+###
+
+GET http://localhost:8080/api/v1/collection/1
+Authorization: {{accessToken}}
+
+###
+GET http://localhost:8080/api/v1/collection/2
+Authorization: {{accessToken}}
+
+###
+POST http://localhost:8080/api/v1/collection/1/1
+Authorization: {{accessToken}}
+
+###
+POST http://localhost:8080/api/v1/collection/1/2
+Authorization: {{accessToken}}
+
+###
+DELETE http://localhost:8080/api/v1/collection/2
+Authorization: {{accessToken}}
+
+###
+DELETE http://localhost:8080/api/v1/bookmark/2
+Authorization: {{accessToken}}
+
+###
