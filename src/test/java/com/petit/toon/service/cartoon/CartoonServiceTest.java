@@ -90,21 +90,19 @@ public class CartoonServiceTest {
                 new FileInputStream(absolutePath + "/sample3.png"));
 
         CartoonUploadServiceRequest mockInput1 = CartoonUploadServiceRequest.builder()
-                .userId(user.getId())
                 .title("sample-title")
                 .description("sample-description")
                 .toonImages(Arrays.asList(file1, file2, file3))
                 .build();
 
         CartoonUploadServiceRequest mockInput2 = CartoonUploadServiceRequest.builder()
-                .userId(user.getId())
                 .title("sample-title2")
                 .description("sample-description2")
                 .toonImages(Arrays.asList(file1, file2))
                 .build();
         //when
-        CartoonUploadResponse output = cartoonService.save(mockInput1);
-        CartoonUploadResponse output2 = cartoonService.save(mockInput2);
+        CartoonUploadResponse output = cartoonService.save(user.getId(), mockInput1);
+        CartoonUploadResponse output2 = cartoonService.save(user.getId(), mockInput2);
 
         //then
         Cartoon toon = cartoonRepository.findById(output.getToonId()).get();

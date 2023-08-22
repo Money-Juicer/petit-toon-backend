@@ -4,6 +4,7 @@
 ==== HTTP Request
 
 include::{snippets}/toon-create/curl-request.adoc[]
+include::{snippets}/toon-create/request-parts.adoc[]
 
 ==== HTTP Response
 
