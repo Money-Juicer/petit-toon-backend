@@ -13,12 +13,6 @@ Content-Disposition: form-data; name="toonImages"; filename="sample2.png"
 < ../src/test/resources/sample-toons/sample2.png
 
 --boundary
-Content-Disposition: form-data; name="userId";
-Content-Type: text/plain
-
-1
-
---boundary
 Content-Disposition: form-data; name="title";
 Content-Type: text/plain
 
@@ -47,12 +41,6 @@ Content-Disposition: form-data; name="toonImages"; filename="sample1.png"
 Content-Disposition: form-data; name="toonImages"; filename="sample2.png"
 
 < ../src/test/resources/sample-toons/sample2.png
-
---boundary2
-Content-Disposition: form-data; name="userId";
-Content-Type: text/plain
-
-1
 
 --boundary2
 Content-Disposition: form-data; name="title";
