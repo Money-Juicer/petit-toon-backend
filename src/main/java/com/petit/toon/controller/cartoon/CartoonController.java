@@ -22,8 +22,9 @@ public class CartoonController {
     }
 
     @PostMapping("/api/v1/toon")
-    public ResponseEntity<CartoonUploadResponse> upload(@Valid @ModelAttribute CartoonUploadRequest cartoonUploadRequest) throws IOException {
-        CartoonUploadResponse output = cartoonService.save(cartoonUploadRequest.toInput());
+    public ResponseEntity<CartoonUploadResponse> upload(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                                        @Valid @ModelAttribute CartoonUploadRequest cartoonUploadRequest) throws IOException {
+        CartoonUploadResponse output = cartoonService.save(userId, cartoonUploadRequest.toInput());
         return new ResponseEntity<>(output, HttpStatus.CREATED);
     }
 

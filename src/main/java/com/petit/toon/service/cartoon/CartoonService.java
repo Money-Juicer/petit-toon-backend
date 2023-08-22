@@ -36,8 +36,7 @@ public class CartoonService {
     @Value("${app.toon.dir}")
     private String toonDirectory;
 
-    public CartoonUploadResponse save(CartoonUploadServiceRequest input) throws IOException {
-        Long userId = input.getUserId();
+    public CartoonUploadResponse save(long userId, CartoonUploadServiceRequest input) throws IOException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found. id: " + userId));
 
