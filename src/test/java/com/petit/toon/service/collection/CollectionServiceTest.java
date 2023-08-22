@@ -13,7 +13,6 @@ import com.petit.toon.service.collection.response.BookmarkResponse;
 import com.petit.toon.service.collection.response.CollectionInfoListResponse;
 import com.petit.toon.service.collection.response.CollectionResponse;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -83,8 +82,8 @@ class CollectionServiceTest {
         Cartoon cartoon2 = createToon(user2, "sample-title2", "sample/thumbnail/path");
 
         // when
-        BookmarkResponse response1 = collectionService.createBookmark(collection.getId(), cartoon1.getId());
-        BookmarkResponse response2 = collectionService.createBookmark(collection.getId(), cartoon2.getId());
+        BookmarkResponse response1 = collectionService.createBookmark(user1.getId(), collection.getId(), cartoon1.getId());
+        BookmarkResponse response2 = collectionService.createBookmark(user1.getId(), collection.getId(), cartoon2.getId());
 
 
         // then
@@ -123,13 +122,15 @@ class CollectionServiceTest {
                 .closed(true)
                 .build());
 
+        PageRequest pageRequest = PageRequest.of(0, 30);
+
         // when
         /** 용우 -> 용우 (자신의 컬렉션 리스트 조회) **/
-        CollectionInfoListResponse openResponse = collectionService.viewCollectionList(user1.getId(), true);
+        CollectionInfoListResponse openResponse = collectionService.viewCollectionList(user1.getId(), true, pageRequest);
         /** 다른사람 -> 용우의 컬렉션 조회 (비공개 컬렉션은 Response 담겨있으면 안됨.)**/
-        CollectionInfoListResponse closedResponse = collectionService.viewCollectionList(user1.getId(), false);
+        CollectionInfoListResponse closedResponse = collectionService.viewCollectionList(user1.getId(), false, pageRequest);
         /** 다른사람 -> 승환 (아무 컬렉션도 담겨있지 않음)**/
-        CollectionInfoListResponse nothingResponse = collectionService.viewCollectionList(user2.getId(), false);
+        CollectionInfoListResponse nothingResponse = collectionService.viewCollectionList(user2.getId(), false, pageRequest);
 
         // then
         /** openResponse **/

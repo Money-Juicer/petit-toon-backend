@@ -94,7 +94,7 @@ class CollectionControllerTest extends RestDocsSupport {
     @Test
     void createBookmark() throws Exception {
         // given
-        given(collectionService.createBookmark(anyLong(), anyLong()))
+        given(collectionService.createBookmark(anyLong(), anyLong(), anyLong()))
                 .willReturn(new BookmarkResponse(1l));
 
         // when // then
@@ -119,14 +119,20 @@ class CollectionControllerTest extends RestDocsSupport {
         CollectionInfoResponse res1 = createCollectionInfo(1l, "title1", false);
         CollectionInfoResponse res2 = createCollectionInfo(2l, "title2", false);
         CollectionInfoResponse res3 = createCollectionInfo(3l, "title3", true);
-        given(collectionService.viewCollectionList(anyLong(), anyBoolean()))
+        given(collectionService.viewCollectionList(anyLong(), anyBoolean(), any()))
                 .willReturn(new CollectionInfoListResponse(List.of(res1, res2, res3)));
 
         // when // then
-        mockMvc.perform(get("/api/v1/collection/author/{authorId}", 1l))
+        mockMvc.perform(get("/api/v1/collection/author/{authorId}", 1l)
+                        .param("page", "0")
+                        .param("size", "30"))
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(document("collection-list",
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").optional().description("데이터 수")
+                        ),
                         pathParameters(
                                 parameterWithName("authorId").description("조회할 유저 ID")
                         ),
