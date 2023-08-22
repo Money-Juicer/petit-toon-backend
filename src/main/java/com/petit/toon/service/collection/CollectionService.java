@@ -45,9 +45,13 @@ public class CollectionService {
     /**
      * Bookmark 생성
      */
-    public BookmarkResponse createBookmark(long collectionId, long cartoonId) {
+    public BookmarkResponse createBookmark(long userId, long collectionId, long cartoonId) {
         Collection collection = collectionRepository.findById(collectionId)
                 .orElseThrow(() -> new RuntimeException("Collection not found. id: " + collectionId));
+
+        if (userId != collection.getUser().getId()) {
+            throw new RuntimeException("The user ID in the collection does not match the user ID requested.");
+        }
 
         Cartoon cartoon = cartoonRepository.findById(cartoonId)
                 .orElseThrow(() -> new RuntimeException("Cartoon not found. id: " + cartoonId));
@@ -63,16 +67,16 @@ public class CollectionService {
     /**
      * Author의 Collection List 조회
      */
-    public CollectionInfoListResponse viewCollectionList(long authorId, boolean isSelf) {
-        List<Collection> collections = collectionRepository.findCollectionsByUserId(authorId);
+    public CollectionInfoListResponse viewCollectionList(long authorId, boolean isSelf, Pageable pageable) {
         if (isSelf) {
+            List<Collection> collections = collectionRepository.findCollectionsByUserId(authorId, pageable);
             List<CollectionInfoResponse> responseList = collections.stream()
                     .map(CollectionInfoResponse::of)
                     .toList();
             return new CollectionInfoListResponse(responseList);
         }
+        List<Collection> collections = collectionRepository.findOpenedCollectionsByUserId(authorId, pageable);
         List<CollectionInfoResponse> openedResponseList = collections.stream()
-                .filter(c -> !c.isClosed())
                 .map(CollectionInfoResponse::of)
                 .toList();
         return new CollectionInfoListResponse(openedResponseList);

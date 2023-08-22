@@ -35,10 +35,11 @@ public class CollectionController {
      * Collection에 Bookmark 등록.
      */
     @PostMapping("/api/v1/collection/{collectionId}/{cartoonId}")
-    public ResponseEntity<BookmarkResponse> createBookmark(@PathVariable("collectionId") long collectionId,
+    public ResponseEntity<BookmarkResponse> createBookmark(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                                           @PathVariable("collectionId") long collectionId,
                                                            @PathVariable("cartoonId") long cartoonId) {
 
-        BookmarkResponse response = collectionService.createBookmark(collectionId, cartoonId);
+        BookmarkResponse response = collectionService.createBookmark(userId, collectionId, cartoonId);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -47,10 +48,11 @@ public class CollectionController {
      */
     @GetMapping("/api/v1/collection/author/{authorId}")
     public ResponseEntity<CollectionInfoListResponse> listCollection(@AuthenticationPrincipal(expression = "user.id") long userId,
-                                                                     @PathVariable("authorId") long authorId) {
+                                                                     @PathVariable("authorId") long authorId,
+                                                                     @PageableDefault(size = 30) Pageable pageable) {
         CollectionInfoListResponse response = (userId == authorId) ?
-                collectionService.viewCollectionList(authorId, true) :
-                collectionService.viewCollectionList(authorId, false);
+                collectionService.viewCollectionList(authorId, true, pageable) :
+                collectionService.viewCollectionList(authorId, false, pageable);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
