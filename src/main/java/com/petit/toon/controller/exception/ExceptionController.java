@@ -2,6 +2,7 @@ package com.petit.toon.controller.exception;
 
 import com.petit.toon.controller.exception.response.ErrorResponse;
 import com.petit.toon.exception.PetitToonException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,5 +30,15 @@ public class ExceptionController {
         e.getFieldErrors().forEach(fieldError ->
                 body.addValidation(fieldError.getField(), fieldError.getDefaultMessage()));
         return ResponseEntity.badRequest().body(body);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> dataIntegrityViolation(DataIntegrityViolationException e) {
+        return ResponseEntity
+                .badRequest()
+                .body(ErrorResponse.builder()
+                        .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
+                        .message("요청 데이터를 처리할 수 없습니다.")
+                        .build());
     }
 }
