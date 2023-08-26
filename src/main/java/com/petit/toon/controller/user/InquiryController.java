@@ -2,9 +2,10 @@ package com.petit.toon.controller.user;
 
 import com.petit.toon.service.user.InquiryService;
 import com.petit.toon.service.user.response.TagExistResponse;
-import com.petit.toon.service.user.response.UserResponse;
+import com.petit.toon.service.user.response.UserDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +17,10 @@ public class InquiryController {
 
     private final InquiryService inquiryService;
 
-    @GetMapping("/api/v1/user/{userId}")
-    public ResponseEntity<UserResponse> inquiry(@PathVariable("userId") long userId) {
-        return ResponseEntity.ok(inquiryService.inquiryByUserId(userId));
+    @GetMapping("/api/v1/user/{inquiryUserId}")
+    public ResponseEntity<UserDetailResponse> inquiry(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                                      @PathVariable("inquiryUserId") long inquiryUserId) {
+        return ResponseEntity.ok(inquiryService.inquiryByUserId(userId, inquiryUserId));
     }
 
     @PostMapping("/api/v1/user/{tag}")
