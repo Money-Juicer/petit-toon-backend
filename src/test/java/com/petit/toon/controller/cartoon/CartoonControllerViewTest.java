@@ -1,11 +1,12 @@
 package com.petit.toon.controller.cartoon;
 
 import com.petit.toon.controller.RestDocsSupport;
-import com.petit.toon.entity.cartoon.LikeStatus;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.exception.notfound.CartoonNotFoundException;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.CartoonService;
+import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
+import com.petit.toon.service.cartoon.response.CartoonListResponse;
 import com.petit.toon.service.cartoon.response.CartoonResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,10 +21,10 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -33,6 +34,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,24 +67,25 @@ public class CartoonControllerViewTest extends RestDocsSupport {
     @DisplayName("웹툰 단건 조회 API")
     void getToon() throws Exception {
         // given
-        CartoonResponse response = CartoonResponse.builder()
+        CartoonDetailResponse response = CartoonDetailResponse.builder()
                 .id(1L)
                 .title("sample-title")
                 .description("sample-description")
-                .author("sample-author")
+                .authorId(3L)
+                .authorNickname("sample-author")
                 .profileImageUrl("profileImages/1.png")
-                .viewCount(0)
+                .viewCount(100)
                 .imagePaths(List.of("toons/1/1-0.png", "toons/1/1-1.png"))
                 .thumbnailUrl("toons/1/1-thumb.png")
-                .likeCount(0)
-                .likeStatus(LikeStatus.NONE.description)
+                .likeCount(42)
+                .likeStatus("LIKE")
                 .build();
         given(cartoonService.findOne(anyLong(), anyLong())).willReturn(response);
 
         // when // then
         mockMvc.perform(get("/api/v1/toon/{toonId}", 1))
                 .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andDo(document("toon-get",
                         pathParameters(
                                 parameterWithName("toonId").description("웹툰 ID")
@@ -94,7 +97,9 @@ public class CartoonControllerViewTest extends RestDocsSupport {
                                         .description("만화 제목"),
                                 fieldWithPath("description").type(JsonFieldType.STRING)
                                         .description("만화 설명"),
-                                fieldWithPath("author").type(JsonFieldType.STRING)
+                                fieldWithPath("authorId").type(JsonFieldType.NUMBER)
+                                        .description("작가 유저 ID"),
+                                fieldWithPath("authorNickname").type(JsonFieldType.STRING)
                                         .description("작가 이름"),
                                 fieldWithPath("profileImageUrl").type(JsonFieldType.STRING)
                                         .description("작가 프로필 이미지 경로"),
@@ -123,7 +128,7 @@ public class CartoonControllerViewTest extends RestDocsSupport {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("404"))
                 .andExpect(jsonPath("$.message").value(CartoonNotFoundException.MESSAGE))
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andDo(document("exception-cartoon-not-found",
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.STRING)
@@ -135,15 +140,59 @@ public class CartoonControllerViewTest extends RestDocsSupport {
     }
 
     @Test
+    @DisplayName("유저 페이지의 웹툰 목록 조회 API")
+    void getToons() throws Exception {
+        // given
+        CartoonResponse cartoon1 = createCartoon(1L, "김영현의 모험1", "king", "toons/1/1-thumb.png");
+        CartoonResponse cartoon2 = createCartoon(6L, "김영현의 모험2", "king", "toons/6/6-thumb.png");
+        CartoonResponse cartoon3 = createCartoon(12L, "김영현의 모험3", "king", "toons/12/12-thumb.png");
+
+        CartoonListResponse response = new CartoonListResponse(List.of(cartoon1, cartoon2, cartoon3));
+
+        given(cartoonService.findToons(anyLong(), any())).willReturn(response);
+
+        // when // then
+        mockMvc.perform(get("/api/v1/toon/user/{userId}", 1L))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("toon-get-user",
+                        pathParameters(
+                                parameterWithName("userId").description("유저 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("cartoons").type(JsonFieldType.ARRAY)
+                                        .description("만화 목록"),
+                                fieldWithPath("cartoons[].id").type(JsonFieldType.NUMBER)
+                                        .description("만화 ID"),
+                                fieldWithPath("cartoons[].title").type(JsonFieldType.STRING)
+                                        .description("만화 제목"),
+                                fieldWithPath("cartoons[].author").type(JsonFieldType.STRING)
+                                        .description("작가 닉네임"),
+                                fieldWithPath("cartoons[].thumbnailUrl").type(JsonFieldType.STRING)
+                                        .description("만화 썸네일 경로")
+                        )
+                ));
+    }
+
+    @Test
     @DisplayName("웹툰 조회수 증가 API")
     void view() throws Exception {
         // when // then
         mockMvc.perform(post("/api/v1/toon/{toonId}/view", 1))
                 .andExpect(status().isNoContent())
-                .andDo(MockMvcResultHandlers.print())
+                .andDo(print())
                 .andDo(document("toon-view",
                         pathParameters(
                                 parameterWithName("toonId").description("웹툰 ID")
                         )));
+    }
+
+    private CartoonResponse createCartoon(long id, String title, String author, String thumbnailUrl) {
+        return CartoonResponse.builder()
+                .id(id)
+                .title(title)
+                .author(author)
+                .thumbnailUrl(thumbnailUrl)
+                .build();
     }
 }

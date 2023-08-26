@@ -2,9 +2,12 @@ package com.petit.toon.controller.cartoon;
 
 import com.petit.toon.controller.cartoon.request.CartoonUploadRequest;
 import com.petit.toon.service.cartoon.CartoonService;
-import com.petit.toon.service.cartoon.response.CartoonResponse;
+import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
+import com.petit.toon.service.cartoon.response.CartoonListResponse;
 import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,9 +32,15 @@ public class CartoonController {
     }
 
     @GetMapping("/api/v1/toon/{toonId}")
-    public ResponseEntity<CartoonResponse> getToon(@AuthenticationPrincipal(expression = "user.id") long userId,
-                                                   @PathVariable("toonId") long toonId) {
+    public ResponseEntity<CartoonDetailResponse> getToon(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                                         @PathVariable("toonId") long toonId) {
         return ResponseEntity.ok(cartoonService.findOne(userId, toonId));
+    }
+
+    @GetMapping("/api/v1/toon/user/{userId}")
+    public ResponseEntity<CartoonListResponse> getToons(@PathVariable("userId") long userId,
+                                                        @PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(cartoonService.findToons(userId, pageable));
     }
 
     @PostMapping("/api/v1/toon/{toonId}/view")
@@ -42,8 +51,9 @@ public class CartoonController {
     }
 
     @DeleteMapping("/api/v1/toon/{toonId}")
-    public ResponseEntity<Void> deleteToon(@PathVariable("toonId") long toonId) {
-        cartoonService.delete(toonId);
+    public ResponseEntity<Void> deleteToon(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                           @PathVariable("toonId") long toonId) {
+        cartoonService.delete(userId, toonId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

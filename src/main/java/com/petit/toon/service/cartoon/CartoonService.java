@@ -4,16 +4,20 @@ import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.entity.cartoon.LikeStatus;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.badrequest.AuthorityNotMatchException;
 import com.petit.toon.exception.notfound.CartoonNotFoundException;
 import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
+import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
+import com.petit.toon.service.cartoon.response.CartoonListResponse;
 import com.petit.toon.service.cartoon.response.CartoonResponse;
 import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
 import com.petit.toon.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -64,12 +69,21 @@ public class CartoonService {
     }
 
     @Transactional(readOnly = true)
-    public CartoonResponse findOne(long userId, long toonId) {
+    public CartoonDetailResponse findOne(long userId, long toonId) {
         Cartoon cartoon = cartoonRepository.findCartoonById(toonId)
                 .orElseThrow(CartoonNotFoundException::new);
         long likeCount = likeService.count(toonId);
         LikeStatus likeStatus = likeService.isLiked(userId, toonId);
-        return CartoonResponse.of(cartoon, likeCount, likeStatus);
+        return CartoonDetailResponse.of(cartoon, likeCount, likeStatus);
+    }
+
+    @Transactional(readOnly = true)
+    public CartoonListResponse findToons(long userId, Pageable pageable) {
+        List<Cartoon> cartoons = cartoonRepository.findAllByUserId(userId, pageable);
+        List<CartoonResponse> cartoonList = cartoons.stream()
+                .map(CartoonResponse::of)
+                .collect(Collectors.toList());
+        return new CartoonListResponse(cartoonList);
     }
 
     public void increaseViewCount(long userId, long toonId) {
@@ -83,15 +97,20 @@ public class CartoonService {
         cartoon.increaseViewCount();
     }
 
-    private String getThumbnailPath(List<Image> images) {
-        return toonDirectory.substring(0, toonDirectory.indexOf("toons")) + images.get(0).getPath();
-    }
-
-    public void delete(Long toonId) {
+    public void delete(Long userId, Long toonId) {
+        Cartoon cartoon = cartoonRepository.findById(toonId)
+                .orElseThrow(CartoonNotFoundException::new);
+        if (cartoon.getUser().getId() != userId) {
+            throw new AuthorityNotMatchException();
+        }
         cartoonRepository.deleteById(toonId);
     }
 
     public void setToonDirectory(String path) {
         this.toonDirectory = path;
+    }
+
+    private String getThumbnailPath(List<Image> images) {
+        return toonDirectory.substring(0, toonDirectory.indexOf("toons")) + images.get(0).getPath();
     }
 }
