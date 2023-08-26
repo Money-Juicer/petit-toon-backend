@@ -85,8 +85,14 @@ class CommentControllerTest extends RestDocsSupport {
                         pathParameters(
                                 parameterWithName("toonId").description("웹툰 ID")
                         ),
-                        requestFields(fieldWithPath("content").description("댓글 내용 (200자 이내)"))
+                        requestFields(
+                                fieldWithPath("content").description("댓글 내용 (200자 이내)")),
+                        responseFields(
+                                fieldWithPath("commentId").type(JsonFieldType.NUMBER)
+                                        .description("생성된 댓글 ID")
+                        )
                 ));
+
     }
 
     @Test
@@ -146,7 +152,7 @@ class CommentControllerTest extends RestDocsSupport {
                         .param("size", "10"))
                 .andExpect(status().isOk())
                 .andDo(MockMvcResultHandlers.print())
-                .andDo(document("comment-list-byUser",
+                .andDo(document("comment-list-user",
                         queryParameters(
                                 parameterWithName("page").description("페이지 번호"),
                                 parameterWithName("size").optional().description("데이터 수")
