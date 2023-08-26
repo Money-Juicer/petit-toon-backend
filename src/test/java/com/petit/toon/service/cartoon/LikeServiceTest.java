@@ -2,6 +2,7 @@ package com.petit.toon.service.cartoon;
 
 import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.cartoon.Like;
+import com.petit.toon.entity.cartoon.LikeStatus;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.cartoon.LikeRepository;
@@ -170,6 +171,57 @@ class LikeServiceTest {
         assertThat(redisUtil.getBit(key, user2.getId())).isTrue();
         assertThat(redisUtil.getBit(key, user3.getId())).isTrue();
         assertThat(redisUtil.getBit(key, user4.getId())).isTrue();
+    }
+
+    @Test
+    @DisplayName("웹툰의 좋아요 수를 가져온다")
+    void count() {
+        // given
+        User user1 = createUser("hotoran");
+        User user2 = createUser("timel2ss");
+        User user3 = createUser("Iced");
+        User user4 = createUser("초코송이00");
+
+        Cartoon cartoon = createToon(user1, "Genshin");
+
+        createLike(user4, cartoon);
+        likeService.like(user2.getId(), cartoon.getId());
+        likeService.like(user3.getId(), cartoon.getId());
+
+        // when
+        long count = likeService.count(cartoon.getId());
+
+        // then
+        assertThat(count).isEqualTo(3L);
+    }
+
+    @Test
+    @DisplayName("웹툰의 좋아요/싫어요 여부를 확인한다.")
+    void isLiked() {
+        // given
+        User user1 = createUser("hotoran");
+        User user2 = createUser("timel2ss");
+        User user3 = createUser("Iced");
+        User user4 = createUser("초코송이00");
+        User user5 = createUser("kingg");
+
+        Cartoon cartoon = createToon(user1, "Genshin");
+
+        createLike(user2, cartoon);
+        likeService.like(user3.getId(), cartoon.getId());
+        likeService.dislike(user4.getId(), cartoon.getId());
+
+        // when
+        LikeStatus result1 = likeService.isLiked(user2.getId(), cartoon.getId());
+        LikeStatus result2 = likeService.isLiked(user3.getId(), cartoon.getId());
+        LikeStatus result3 = likeService.isLiked(user4.getId(), cartoon.getId());
+        LikeStatus result4 = likeService.isLiked(user5.getId(), cartoon.getId());
+
+        // then
+        assertThat(result1).isEqualTo(LikeStatus.LIKE);
+        assertThat(result2).isEqualTo(LikeStatus.LIKE);
+        assertThat(result3).isEqualTo(LikeStatus.DISLIKE);
+        assertThat(result4).isEqualTo(LikeStatus.NONE);
     }
 
     private User createUser(String nickname) {
