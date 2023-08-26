@@ -7,14 +7,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AuthResponse {
-    private long userId;
+public class ReissueResponse {
     private String accessToken;
     private String refreshToken;
 
     @Builder
-    private AuthResponse(long userId, String accessToken, String refreshToken) {
-        this.userId = userId;
+    private ReissueResponse(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }

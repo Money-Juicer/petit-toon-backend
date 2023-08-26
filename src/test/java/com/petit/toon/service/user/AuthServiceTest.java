@@ -10,6 +10,7 @@ import com.petit.toon.security.JwtTokenProvider;
 import com.petit.toon.service.user.request.LoginServiceRequest;
 import com.petit.toon.service.user.request.ReissueServiceRequest;
 import com.petit.toon.service.user.response.AuthResponse;
+import com.petit.toon.service.user.response.ReissueResponse;
 import com.petit.toon.util.RedisUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -113,7 +114,7 @@ class AuthServiceTest {
                 .build();
 
         // when
-        AuthResponse response = authService.reissueToken(request);
+        ReissueResponse response = authService.reissueToken(request);
 
         // then
         assertThat(response.getAccessToken()).isNotBlank();

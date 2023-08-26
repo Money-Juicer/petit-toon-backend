@@ -13,6 +13,7 @@ import com.petit.toon.exception.notfound.RefreshTokenNotFoundException;
 import com.petit.toon.service.user.AuthService;
 import com.petit.toon.service.user.UserService;
 import com.petit.toon.service.user.response.AuthResponse;
+import com.petit.toon.service.user.response.ReissueResponse;
 import com.petit.toon.service.user.response.SignupResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -194,6 +195,7 @@ class UserControllerTest extends RestDocsSupport {
         // given
         given(authService.authenticate(any())).willReturn(
                 AuthResponse.builder()
+                        .userId(1L)
                         .accessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTE4NTEyNTV9.P_clLb6hZOQ9gHtzhW5-7bFgSbWBaqVnS7AVF-yJ9Qs")
                         .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTMwNTkwNTV9.mTA7MeINcCshC7Oz5rY6R8RVX8TxrSFgakKBqIhK9pY")
                         .build());
@@ -218,6 +220,8 @@ class UserControllerTest extends RestDocsSupport {
                                         .description("비밀번호 (20자 이내)")
                         ),
                         responseFields(
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER)
+                                        .description("유저 ID"),
                                 fieldWithPath("accessToken").type(JsonFieldType.STRING)
                                         .description("access 토큰 (ttl 30분)"),
                                 fieldWithPath("refreshToken").type(JsonFieldType.STRING)
@@ -230,7 +234,7 @@ class UserControllerTest extends RestDocsSupport {
     void reissue() throws Exception {
         // given
         given(authService.reissueToken(any())).willReturn(
-                AuthResponse.builder()
+                ReissueResponse.builder()
                         .accessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTE4NTEyNTV9.P_clLb6hZOQ9gHtzhW5-7bFgSbWBaqVnS7AVF-yJ9Qs")
                         .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTMwNTkwNTV9.mTA7MeINcCshC7Oz5rY6R8RVX8TxrSFgakKBqIhK9pY")
                         .build());

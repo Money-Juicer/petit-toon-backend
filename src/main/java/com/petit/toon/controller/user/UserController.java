@@ -8,6 +8,7 @@ import com.petit.toon.service.user.UserService;
 import com.petit.toon.service.user.request.LoginServiceRequest;
 import com.petit.toon.service.user.request.ReissueServiceRequest;
 import com.petit.toon.service.user.response.AuthResponse;
+import com.petit.toon.service.user.response.ReissueResponse;
 import com.petit.toon.service.user.response.SignupResponse;
 import com.petit.toon.util.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,8 +41,8 @@ public class UserController {
                                               HttpServletResponse httpResponse) {
         LoginServiceRequest serviceRequest = request.toServiceRequest(getClientIp(httpRequest));
         AuthResponse response = authService.authenticate(serviceRequest);
-        cookieUtil.add(httpResponse, "accessToken", response.getAccessToken(), (int) ACCESS_TOKEN_VALID_TIME_MILLISECONDS);
-        cookieUtil.add(httpResponse, "refreshToken", response.getRefreshToken(), (int) REFRESH_TOKEN_VALID_TIME_MILLISECONDS);
+        cookieUtil.add(httpResponse, "accessToken", response.getAccessToken(), (int) ACCESS_TOKEN_VALID_TIME_MILLISECONDS / 1000);
+        cookieUtil.add(httpResponse, "refreshToken", response.getRefreshToken(), (int) REFRESH_TOKEN_VALID_TIME_MILLISECONDS / 1000);
         return ResponseEntity.ok(response);
     }
 
@@ -51,8 +52,8 @@ public class UserController {
     }
 
     @PostMapping("/api/v1/token/reissue")
-    public ResponseEntity<AuthResponse> reissue(@Valid @RequestBody ReissueRequest request,
-                                                HttpServletRequest httpRequest) {
+    public ResponseEntity<ReissueResponse> reissue(@Valid @RequestBody ReissueRequest request,
+                                                   HttpServletRequest httpRequest) {
         ReissueServiceRequest serviceRequest = request.toServiceRequest(getClientIp(httpRequest));
         return ResponseEntity.ok(authService.reissueToken(serviceRequest));
     }

@@ -5,10 +5,12 @@ import com.petit.toon.exception.badrequest.IpAddressNotMatchException;
 import com.petit.toon.exception.badrequest.TokenNotValidException;
 import com.petit.toon.exception.notfound.RefreshTokenNotFoundException;
 import com.petit.toon.repository.token.RefreshTokenRepository;
+import com.petit.toon.security.CustomUserDetails;
 import com.petit.toon.security.JwtTokenProvider;
 import com.petit.toon.service.user.request.LoginServiceRequest;
 import com.petit.toon.service.user.request.ReissueServiceRequest;
 import com.petit.toon.service.user.response.AuthResponse;
+import com.petit.toon.service.user.response.ReissueResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,18 +32,21 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
+        long userId = customUserDetails.getUser().getId();
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
         String refreshToken = jwtTokenProvider.createRefreshToken(authentication);
 
         saveRefreshToken(authentication, refreshToken, request.getClientIp());
         return AuthResponse.builder()
+                .userId(userId)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    public AuthResponse reissueToken(ReissueServiceRequest request) {
+    public ReissueResponse reissueToken(ReissueServiceRequest request) {
         String refreshToken = request.getRefreshToken();
         if (!(StringUtils.hasText(refreshToken) && jwtTokenProvider.validateToken(refreshToken))) {
             throw new TokenNotValidException();
@@ -54,7 +59,7 @@ public class AuthService {
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(jwtTokenProvider.getUsername(refreshToken));
-        return AuthResponse.builder()
+        return ReissueResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
