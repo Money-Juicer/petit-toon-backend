@@ -36,6 +36,19 @@ include::{snippets}/toon-get/path-parameters.adoc[]
 include::{snippets}/toon-get/http-response.adoc[]
 include::{snippets}/toon-get/response-fields.adoc[]
 
+[[toon-get-user]]
+=== 유저가 등록한 웹툰 리스트 조회
+
+==== HTTP Request
+
+include::{snippets}/toon-get-user/http-request.adoc[]
+include::{snippets}/toon-get-user/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-get-user/http-response.adoc[]
+include::{snippets}/toon-get-user/response-fields.adoc[]
+
 [[toon-view]]
 === 웹툰 조회수 상승
 

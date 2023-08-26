@@ -1,0 +1,22 @@
+[[profile-image-upload]]
+=== 프로필 이미지 업로드
+
+==== HTTP Request
+
+include::{snippets}/profile-image-upload/curl-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/profile-image-upload/http-response.adoc[]
+include::{snippets}/profile-image-upload/response-fields.adoc[]
+
+[[profile-image-default]]
+=== 기본 이미지로 프로필 변경
+
+==== HTTP Request
+
+include::{snippets}/profile-image-default/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/profile-image-default/http-response.adoc[]

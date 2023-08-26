@@ -56,6 +56,17 @@ include::{snippets}/exception-argument-not-valid/http-request.adoc[]
 include::{snippets}/exception-argument-not-valid/http-response.adoc[]
 include::{snippets}/exception-argument-not-valid/response-fields.adoc[]
 
+==== Integrity Constraint를 위반한 데이터 처리 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-data-integrity-violation/http-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-data-integrity-violation/http-response.adoc[]
+include::{snippets}/exception-data-integrity-violation/response-fields.adoc[]
+
 [[exception-404]]
 === [404] Not Found 예외
 

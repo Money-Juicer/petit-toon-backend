@@ -46,6 +46,11 @@ include::api/user/auth.adoc[]
 
 include::api/user/user.adoc[]
 
+[[Profile-API]]
+== Profile API
+
+include::api/user/profile.adoc[]
+
 [[Exception-API]]
 == Exception API
 
