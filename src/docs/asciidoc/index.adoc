@@ -36,6 +36,12 @@ include::api/collection/bookmark.adoc[]
 
 include::api/cartoon/like.adoc[]
 
+[[Comment-API]]
+== Comment API
+
+include::api/cartoon/comment.adoc[]
+
+
 [[Auth-API]]
 == Authentication API
 

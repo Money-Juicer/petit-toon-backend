@@ -1,0 +1,52 @@
+[[comment-create]]
+=== 댓글 등록
+
+==== HTTP Request
+
+include::{snippets}/comment-create/path-parameters.adoc[]
+include::{snippets}/comment-create/http-request.adoc[]
+include::{snippets}/comment-create/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/comment-create/http-response.adoc[]
+include::{snippets}/comment-create/response-fields.adoc[]
+
+[[comment-delete]]
+=== 댓글 삭제
+
+==== HTTP Request
+
+include::{snippets}/comment-delete/http-request.adoc[]
+include::{snippets}/comment-delete/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/comment-delete/http-response.adoc[]
+
+[[comment-list]]
+=== 웹툰 댓글 조회
+
+==== HTTP Request
+
+include::{snippets}/comment-list/http-request.adoc[]
+include::{snippets}/comment-list/path-parameters.adoc[]
+include::{snippets}/comment-list/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/comment-list/http-response.adoc[]
+include::{snippets}/comment-list/response-fields.adoc[]
+
+[[comment-list-user]]
+=== 자신이 작성한 댓글 조회
+
+==== HTTP Request
+
+include::{snippets}/comment-list-user/http-request.adoc[]
+include::{snippets}/comment-list-user/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/comment-list-user/http-response.adoc[]
+include::{snippets}/comment-list-user/response-fields.adoc[]
