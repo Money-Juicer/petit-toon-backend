@@ -1,16 +1,24 @@
 package com.petit.toon.controller.user;
 
 import com.petit.toon.controller.RestDocsSupport;
+import com.petit.toon.entity.user.User;
+import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.user.FollowService;
-import com.petit.toon.service.user.response.FollowResponse;
-import com.petit.toon.service.user.response.FollowUserListResponse;
-import com.petit.toon.service.user.response.FollowUserResponse;
+import com.petit.toon.service.user.response.UserListResponse;
 import com.petit.toon.service.user.response.UserResponse;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.test.context.support.TestExecutionEvent;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
@@ -22,60 +30,91 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = FollowController.class)
+@SpringBootTest
 @ActiveProfiles("test")
+@EnableConfigurationProperties(H2ConsoleProperties.class)
+@WithUserDetails(value = "sample@email.com", userDetailsServiceBeanName = "customUserDetailsService", setupBefore = TestExecutionEvent.TEST_EXECUTION)
 class FollowControllerTest extends RestDocsSupport {
 
     @MockBean
     FollowService followService;
 
+    @Autowired
+    UserRepository userRepository;
+
+    @BeforeEach
+    void setUp() {
+        userRepository.save(
+                User.builder()
+                        .email("sample@email.com")
+                        .password("SamplePW123!@#")
+                        .build());
+    }
+
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAllInBatch();
+    }
+
     @Test
     @DisplayName("팔로우 등록 API")
     void follow() throws Exception {
-        // given
-        given(followService.follow(anyLong(), anyLong())).willReturn(new FollowResponse(1l));
-
         // when // then
-        mockMvc.perform(post("/api/v1/follow/{followerId}/{followeeId}", 1, 2))
+        mockMvc.perform(post("/api/v1/follow/{followeeId}", 2L))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.followId").value(1l))
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(document("follow-create",
                         pathParameters(
-                                parameterWithName("followerId").description("유저 ID"),
-                                parameterWithName("followeeId").description("팔로우하려는 유저 ID")
-                        ),
-                        responseFields(
-                                fieldWithPath("followId").description("생성된 팔로우 ID")
+                                parameterWithName("followeeId").description("팔로우할 유저 ID")
                         )
                 ));
     }
 
     @Test
-    @DisplayName("팔로우 목록 조회 API")
+    @DisplayName("팔로우 중복 등록 - DataIntegrityViolationException")
+    void follow2() throws Exception {
+        // given
+        doThrow(new DataIntegrityViolationException("error message"))
+                .when(followService).follow(anyLong(), anyLong());
+
+        // when // then
+        mockMvc.perform(post("/api/v1/follow/{followeeId}", 2L))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("요청 데이터를 처리할 수 없습니다."))
+                .andDo(print())
+                .andDo(document("exception-data-integrity-violation",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
+                        )));
+    }
+
+    @Test
+    @DisplayName("내가 팔로우 하는 유저 목록 조회 API")
     void getFollowingUsers() throws Exception {
         // given
         UserResponse userResponse1 = createUser(1l, "zl존", "@Hotoran");
         UserResponse userResponse2 = createUser(2l, "DrangeWoo", "@timel2ss");
 
-        FollowUserResponse followResponse1 = createFollow(1l, userResponse1);
-        FollowUserResponse followResponse2 = createFollow(2l, userResponse2);
-
-        FollowUserListResponse response = new FollowUserListResponse(List.of(followResponse1, followResponse2));
+        UserListResponse response = new UserListResponse(List.of(userResponse1, userResponse2));
 
         given(followService.findFollowingUsers(anyLong(), any())).willReturn(response);
 
         // when // then
-        mockMvc.perform(get("/api/v1/follow/{userId}?page=0&size=20", 1l))
+        mockMvc.perform(get("/api/v1/follow/{userId}/following?page=0&size=20", 1l))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.followUsers").isArray())
-                .andExpect(jsonPath("$.followUsers[0].followId").value(1l))
-                .andExpect(jsonPath("$.followUsers[1].followId").value(2l))
+                .andExpect(jsonPath("$.users").isArray())
+                .andExpect(jsonPath("$.users[0].id").value(userResponse1.getId()))
+                .andExpect(jsonPath("$.users[1].id").value(userResponse2.getId()))
                 .andDo(MockMvcResultHandlers.print())
-                .andDo(document("follow-list",
+                .andDo(document("follow-following-list",
                         pathParameters(
                                 parameterWithName("userId").description("유저 ID")
                         ),
@@ -84,22 +123,57 @@ class FollowControllerTest extends RestDocsSupport {
                                 parameterWithName("size").optional().description("데이터 수")
                         ),
                         responseFields(
-                                fieldWithPath("followUsers").type(JsonFieldType.ARRAY)
-                                        .description("팔로우 목록 데이터"),
-                                fieldWithPath("followUsers[].followId").type(JsonFieldType.NUMBER)
-                                        .description("팔로우 ID"),
-                                fieldWithPath("followUsers[].user").type(JsonFieldType.OBJECT)
-                                        .description("유저 정보"),
-                                fieldWithPath("followUsers[].user.id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("users").type(JsonFieldType.ARRAY)
+                                        .description("팔로우 유저 목록"),
+                                fieldWithPath("users[].id").type(JsonFieldType.NUMBER)
                                         .description("유저 ID"),
-                                fieldWithPath("followUsers[].user.nickname").type(JsonFieldType.STRING)
+                                fieldWithPath("users[].nickname").type(JsonFieldType.STRING)
                                         .description("유저 닉네임"),
-                                fieldWithPath("followUsers[].user.tag").type(JsonFieldType.STRING)
+                                fieldWithPath("users[].tag").type(JsonFieldType.STRING)
                                         .description("유저 태그"),
-                                fieldWithPath("followUsers[].user.profileImagePath").type(JsonFieldType.STRING)
-                                        .description("유저 프로필 이미지 경로"),
-                                fieldWithPath("followUsers[].user.statusMessage").type(JsonFieldType.STRING)
-                                        .description("유저 상태메시지")
+                                fieldWithPath("users[].profileImagePath").type(JsonFieldType.STRING)
+                                        .description("유저 프로필 이미지 경로")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("나를 팔로우 하는 유저 목록 조회 API")
+    void getFollowedUsers() throws Exception {
+        // given
+        UserResponse userResponse1 = createUser(1l, "zl존", "@Hotoran");
+        UserResponse userResponse2 = createUser(2l, "DrangeWoo", "@timel2ss");
+
+        UserListResponse response = new UserListResponse(List.of(userResponse1, userResponse2));
+
+        given(followService.findFollowedUsers(anyLong(), any())).willReturn(response);
+
+        // when // then
+        mockMvc.perform(get("/api/v1/follow/{userId}/followed?page=0&size=20", 1l))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.users").isArray())
+                .andExpect(jsonPath("$.users[0].id").value(userResponse1.getId()))
+                .andExpect(jsonPath("$.users[1].id").value(userResponse2.getId()))
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document("follow-followed-list",
+                        pathParameters(
+                                parameterWithName("userId").description("유저 ID")
+                        ),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호"),
+                                parameterWithName("size").optional().description("데이터 수")
+                        ),
+                        responseFields(
+                                fieldWithPath("users").type(JsonFieldType.ARRAY)
+                                        .description("팔로우 유저 목록"),
+                                fieldWithPath("users[].id").type(JsonFieldType.NUMBER)
+                                        .description("유저 ID"),
+                                fieldWithPath("users[].nickname").type(JsonFieldType.STRING)
+                                        .description("유저 닉네임"),
+                                fieldWithPath("users[].tag").type(JsonFieldType.STRING)
+                                        .description("유저 태그"),
+                                fieldWithPath("users[].profileImagePath").type(JsonFieldType.STRING)
+                                        .description("유저 프로필 이미지 경로")
                         )
                 ));
     }
@@ -108,20 +182,13 @@ class FollowControllerTest extends RestDocsSupport {
     @DisplayName("팔로우 삭제 API")
     void unfollow() throws Exception {
         //given // when // then
-        mockMvc.perform(delete("/api/v1/follow/{followId}", 1l))
+        mockMvc.perform(delete("/api/v1/follow/{followeeId}", 2L))
                 .andExpect(status().isNoContent())
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(document("follow-delete",
                         pathParameters(
-                                parameterWithName("followId").description("팔로우 ID")
+                                parameterWithName("followeeId").description("팔로우를 취소할 유저 ID")
                         )));
-    }
-
-    private static FollowUserResponse createFollow(long followId, UserResponse userResponse) {
-        return FollowUserResponse.builder()
-                .followId(followId)
-                .user(userResponse)
-                .build();
     }
 
     private UserResponse createUser(long id, String nickname, String tag) {
@@ -130,7 +197,6 @@ class FollowControllerTest extends RestDocsSupport {
                 .nickname(nickname)
                 .tag(tag)
                 .profileImagePath("sample-profile-image-url")
-                .statusMessage("sample-message")
                 .build();
     }
 }

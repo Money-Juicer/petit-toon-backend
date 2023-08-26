@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"follower_id", "followee_id"}))
 public class Follow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,5 +31,12 @@ public class Follow {
     private Follow(User follower, User followee) {
         this.follower = follower;
         this.followee = followee;
+    }
+
+    /**
+     * setCreatedDateTime method is only for test
+     */
+    public void setCreatedDateTime(LocalDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
     }
 }

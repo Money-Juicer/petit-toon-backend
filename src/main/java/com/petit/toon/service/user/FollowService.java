@@ -5,9 +5,8 @@ import com.petit.toon.entity.user.User;
 import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.UserRepository;
-import com.petit.toon.service.user.response.FollowResponse;
-import com.petit.toon.service.user.response.FollowUserListResponse;
-import com.petit.toon.service.user.response.FollowUserResponse;
+import com.petit.toon.service.user.response.UserListResponse;
+import com.petit.toon.service.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ public class FollowService {
     private final UserRepository userRepository;
 
     @Transactional
-    public FollowResponse follow(long followerId, long followeeId) {
+    public void follow(long followerId, long followeeId) {
         User follower = userRepository.findById(followerId)
                 .orElseThrow(UserNotFoundException::new);
         User followee = userRepository.findById(followeeId)
@@ -37,19 +36,37 @@ public class FollowService {
                 .build();
 
         followRepository.save(follow);
-        return new FollowResponse(follow.getId());
     }
 
-    public FollowUserListResponse findFollowingUsers(long userId, Pageable pageable) {
-        List<Follow> followingUsers = followRepository.findByFollowerId(userId, pageable);
-        List<FollowUserResponse> followUserResponses = followingUsers.stream()
-                .map(FollowUserResponse::of)
+    /**
+     * 내가 팔로우 하는 유저 목록 조회
+     */
+    public UserListResponse findFollowingUsers(long userId, Pageable pageable) {
+        List<Follow> follows = followRepository.findByFollowerId(userId, pageable);
+        List<UserResponse> response = follows.stream()
+                .map(follow -> UserResponse.of(follow.getFollowee()))
                 .collect(Collectors.toList());
-        return new FollowUserListResponse(followUserResponses);
+        return new UserListResponse(response);
+    }
+
+    /**
+     * 나를 팔로우 하는 유저 목록 조회
+     */
+    public UserListResponse findFollowedUsers(long userId, Pageable pageable) {
+        List<Follow> follows = followRepository.findByFolloweeId(userId, pageable);
+        List<UserResponse> response = follows.stream()
+                .map(follow -> UserResponse.of(follow.getFollower()))
+                .collect(Collectors.toList());
+        return new UserListResponse(response);
     }
 
     @Transactional
-    public void unfollow(long followId) {
-        followRepository.deleteById(followId);
+    public void unfollow(long followerId, long followeeId) {
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(UserNotFoundException::new);
+        User followee = userRepository.findById(followeeId)
+                .orElseThrow(UserNotFoundException::new);
+
+        followRepository.deleteByFollowerIdAndFolloweeId(follower.getId(), followee.getId());
     }
 }

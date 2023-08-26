@@ -44,6 +44,26 @@ class FollowRepositoryTest {
         assertThat(followUsers).extracting("followee.name").contains("김승환", "김영현");
     }
 
+    @Test
+    @DisplayName("팔로우를 삭제한다")
+    void deleteByFollowerIdAndFolloweeId() {
+        // given
+        User user1 = createUser("김지훈");
+        User user2 = createUser("김승환");
+        User user3 = createUser("김영현");
+
+        followRepository.save(createFollow(user1, user2));
+        followRepository.save(createFollow(user1, user3));
+
+        // when
+        followRepository.deleteByFollowerIdAndFolloweeId(user1.getId(), user3.getId());
+
+        // then
+        List<Follow> follows = followRepository.findByFollowerId(user1.getId(), PageRequest.of(0, 5));
+        assertThat(follows.size()).isEqualTo(1);
+    }
+
+
     private Follow createFollow(User follower, User followee) {
         return Follow.builder()
                 .follower(follower)

@@ -6,22 +6,22 @@ import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
-import com.petit.toon.service.user.response.FollowResponse;
-import com.petit.toon.service.user.response.FollowUserListResponse;
-import org.junit.jupiter.api.AfterEach;
+import com.petit.toon.service.user.response.UserListResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 @ActiveProfiles("test")
 class FollowServiceTest {
     @Autowired
@@ -36,12 +36,6 @@ class FollowServiceTest {
     @Autowired
     FollowService followService;
 
-    @AfterEach
-    void tearDown() {
-        followRepository.deleteAllInBatch();
-        userRepository.deleteAllInBatch();
-    }
-
     @Test
     @DisplayName("사용자는 특정 유저를 팔로우할 수 있다")
     void follow() {
@@ -50,36 +44,74 @@ class FollowServiceTest {
         User user2 = createUser("LEE");
 
         // when
-        FollowResponse response = followService.follow(user1.getId(), user2.getId());
+        followService.follow(user1.getId(), user2.getId());
 
         // then
-        Follow follow = followRepository.findById(response.getFollowId()).get();
+        Follow follow = followRepository.findByFollowerIdAndFolloweeId(user1.getId(), user2.getId()).get();
         assertThat(follow.getFollower().getId()).isEqualTo(user1.getId());
         assertThat(follow.getFollowee().getId()).isEqualTo(user2.getId());
     }
 
     @Test
-    @DisplayName("자신이 팔로우하는 유저 정보를 가져온다")
+    @DisplayName("팔로우는 중복해서 생성될 수 없다")
+    void follow2() {
+        // given
+        User user1 = createUser("KIM");
+        User user2 = createUser("LEE");
+
+        // when // then
+        followService.follow(user1.getId(), user2.getId());
+        assertThatThrownBy(() -> followService.follow(user1.getId(), user2.getId()))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    @DisplayName("내가 팔로우 하는 유저 정보를 가져온다")
     void findFollowingUsers() {
         // given
         User user1 = createUser("김지훈");
         User user2 = createUser("이용우");
         User user3 = createUser("김승환");
 
-        Follow follow1 = createFollow(user1, user2);
-        Follow follow2 = createFollow(user1, user3);
+        createFollow(user1, user2);
+        createFollow(user1, user3);
 
         PageRequest pageRequest = PageRequest.of(0, 20);
 
         // when
-        FollowUserListResponse followingUsers = followService.findFollowingUsers(user1.getId(), pageRequest);
+        UserListResponse followingUsers = followService.findFollowingUsers(user1.getId(), pageRequest);
 
         // then
-        assertThat(followingUsers.getFollowUsers().size()).isEqualTo(2);
-        assertThat(followingUsers.getFollowUsers()).extracting("followId", "user.id", "user.nickname")
+        assertThat(followingUsers.getUsers().size()).isEqualTo(2);
+        assertThat(followingUsers.getUsers()).extracting("id", "nickname")
                 .contains(
-                        tuple(follow1.getId(), user2.getId(), "이용우"),
-                        tuple(follow2.getId(), user3.getId(), "김승환")
+                        tuple(user2.getId(), "이용우"),
+                        tuple(user3.getId(), "김승환")
+                );
+    }
+
+    @Test
+    @DisplayName("나를 팔로우 하는 유저 정보를 가져온다")
+    void findFollowedUsers() {
+        // given
+        User user1 = createUser("김지훈");
+        User user2 = createUser("이용우");
+        User user3 = createUser("김승환");
+
+        createFollow(user2, user1);
+        createFollow(user3, user1);
+
+        PageRequest pageRequest = PageRequest.of(0, 20);
+
+        // when
+        UserListResponse followingUsers = followService.findFollowedUsers(user1.getId(), pageRequest);
+
+        // then
+        assertThat(followingUsers.getUsers().size()).isEqualTo(2);
+        assertThat(followingUsers.getUsers()).extracting("id", "nickname")
+                .contains(
+                        tuple(user2.getId(), "이용우"),
+                        tuple(user3.getId(), "김승환")
                 );
     }
 
@@ -93,7 +125,7 @@ class FollowServiceTest {
         Follow follow = createFollow(user1, user2);
 
         // when
-        followService.unfollow(follow.getId());
+        followService.unfollow(user1.getId(), user2.getId());
 
         // then
         List<Follow> follows = followRepository.findAll();
