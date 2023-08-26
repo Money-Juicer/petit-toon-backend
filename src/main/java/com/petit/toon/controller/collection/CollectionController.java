@@ -72,8 +72,9 @@ public class CollectionController {
      */
 
     @DeleteMapping("/api/v1/collection/{collectionId}")
-    public ResponseEntity<Void> deleteCollection(@PathVariable("collectionId") long collectionId) {
-        collectionService.removeCollection(collectionId);
+    public ResponseEntity<Void> deleteCollection(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                                 @PathVariable("collectionId") long collectionId) {
+        collectionService.removeCollection(userId, collectionId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

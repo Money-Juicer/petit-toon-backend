@@ -4,6 +4,8 @@ import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.collection.Bookmark;
 import com.petit.toon.entity.collection.Collection;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.badrequest.AuthorityNotMatchException;
+import com.petit.toon.exception.notfound.CollectionNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.collection.BookmarkRepository;
 import com.petit.toon.repository.collection.CollectionRepository;
@@ -13,6 +15,7 @@ import com.petit.toon.service.collection.response.BookmarkResponse;
 import com.petit.toon.service.collection.response.CollectionInfoListResponse;
 import com.petit.toon.service.collection.response.CollectionResponse;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,8 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -200,11 +202,38 @@ class CollectionServiceTest {
                 .build());
 
         // when
-        collectionService.removeCollection(collection.getId());
+        collectionService.removeCollection(user.getId(), collection.getId());
 
         // then
         List<Collection> collections = collectionRepository.findAll();
         assertThat(collections).isEmpty();
+    }
+
+    @Test
+    @DisplayName("removeCollection - 삭제 권한이 없는 경우")
+    void removeCollection2() {
+        // given
+        User user = createUser("LEE");
+        User user2 = createUser("KIM");
+        Collection collection = collectionRepository.save(Collection.builder()
+                .user(user)
+                .title("LEE 컬렉션")
+                .closed(false)
+                .build());
+
+        // when // then
+        assertThatThrownBy(() -> collectionService.removeCollection(user2.getId(), collection.getId()))
+                .isInstanceOf(AuthorityNotMatchException.class)
+                .hasMessage(AuthorityNotMatchException.MESSAGE);
+    }
+
+    @Test
+    @DisplayName("removeCollection - collection이 존재하지 않는 경우")
+    void removeCollection3() {
+        // when // then
+        assertThatThrownBy(() -> collectionService.removeCollection(1L, 99999L))
+                .isInstanceOf(CollectionNotFoundException.class)
+                .hasMessage(CollectionNotFoundException.MESSAGE);
     }
 
     @Test

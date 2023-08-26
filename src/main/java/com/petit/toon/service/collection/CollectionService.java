@@ -98,7 +98,12 @@ public class CollectionService {
         return new BookmarkInfoListResponse(bookmarkInfos);
     }
 
-    public void removeCollection(long collectionId) {
+    public void removeCollection(long userId, long collectionId) {
+        Collection collection = collectionRepository.findById(collectionId)
+                .orElseThrow(CollectionNotFoundException::new);
+        if (collection.getUser().getId() != userId) {
+            throw new AuthorityNotMatchException();
+        }
         collectionRepository.deleteById(collectionId);
     }
 
