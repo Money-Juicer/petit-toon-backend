@@ -1,9 +1,12 @@
 package com.petit.toon.repository.search;
 
+import com.petit.toon.DefaultProfileImageSetup;
 import com.petit.toon.config.QueryDslConfig;
 import com.petit.toon.entity.cartoon.Cartoon;
+import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.cartoon.CartoonRepository;
+import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,11 +18,12 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
+import static com.petit.toon.service.user.ProfileImageService.DEFAULT_PROFILE_IMAGE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import({QueryDslConfig.class, SearchRepository.class})
+@Import({QueryDslConfig.class, SearchRepository.class, DefaultProfileImageSetup.class})
 class SearchRepositoryTest {
 
     @Autowired
@@ -27,6 +31,9 @@ class SearchRepositoryTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ProfileImageRepository profileImageRepository;
 
     @Autowired
     CartoonRepository cartoonRepository;
@@ -108,9 +115,12 @@ class SearchRepositoryTest {
     }
 
     private User createUser(String name, String nickname) {
-        return userRepository.save(User.builder()
+        ProfileImage profileImage = profileImageRepository.findById(DEFAULT_PROFILE_IMAGE_ID).get();
+        User user = User.builder()
                 .name(name)
                 .nickname(nickname)
-                .build());
+                .build();
+        user.setProfileImage(profileImage);
+        return userRepository.save(user);
     }
 }

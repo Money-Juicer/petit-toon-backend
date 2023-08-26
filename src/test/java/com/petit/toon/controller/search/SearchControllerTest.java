@@ -35,10 +35,10 @@ class SearchControllerTest extends RestDocsSupport {
     @DisplayName("검색 API")
     void search() throws Exception {
         // given
-        UserResponse user1 = createUser(1l, "김승환", "김영현 광팬", "@chocoSongEE");
+        UserResponse user1 = createUser(1l, "김영현 광팬", "@chocoSongEE");
 
-        CartoonResponse toon1 = createToon(1l, "김영현의 모험", "용사 김영현이 모험을 떠난다", user1.getNickname());
-        CartoonResponse toon2 = createToon(3l, "용사 김영현", "김영현의 모험 2탄", user1.getNickname());
+        CartoonResponse toon1 = createToon(1l, "김영현의 모험", user1.getTag());
+        CartoonResponse toon2 = createToon(3l, "용사 김영현", user1.getTag());
 
         SearchResponse searchResponse = new SearchResponse(List.of(user1), List.of(toon1, toon2));
         given(searchService.search(anyString(), any())).willReturn(searchResponse);
@@ -67,30 +67,16 @@ class SearchControllerTest extends RestDocsSupport {
                                         .description("유저 태그"),
                                 fieldWithPath("users[].profileImagePath").type(JsonFieldType.STRING)
                                         .description("유저 프로필 이미지 경로"),
-                                fieldWithPath("users[].statusMessage").type(JsonFieldType.STRING)
-                                        .description("유저 상태메시지"),
                                 fieldWithPath("toons[]").type(JsonFieldType.ARRAY)
                                         .description("만화 정보 목록 데이터"),
                                 fieldWithPath("toons[].id").type(JsonFieldType.NUMBER)
                                         .description("만화 ID"),
                                 fieldWithPath("toons[].title").type(JsonFieldType.STRING)
                                         .description("만화 제목"),
-                                fieldWithPath("toons[].description").type(JsonFieldType.STRING)
-                                        .description("만화 설명"),
                                 fieldWithPath("toons[].author").type(JsonFieldType.STRING)
                                         .description("작가 이름"),
-                                fieldWithPath("toons[].profileImageUrl").type(JsonFieldType.STRING)
-                                        .description("작가 프로필 이미지 경로"),
                                 fieldWithPath("toons[].thumbnailUrl").type(JsonFieldType.STRING)
-                                        .description("만화 썸네일 url"),
-                                fieldWithPath("toons[].imagePaths").type(JsonFieldType.ARRAY)
-                                        .description("만화 이미지 경로"),
-                                fieldWithPath("toons[].viewCount").type(JsonFieldType.NUMBER)
-                                        .description("만화 조회수"),
-                                fieldWithPath("toons[].likeCount").type(JsonFieldType.NUMBER)
-                                        .description("만화 좋아요수"),
-                                fieldWithPath("toons[].likeStatus").optional().type(JsonFieldType.STRING)
-                                        .description("만화 좋아요 상태 (LIKE/DISLIKE/NONE)")
+                                        .description("만화 썸네일 url")
                         )
                 ));
     }
@@ -99,10 +85,10 @@ class SearchControllerTest extends RestDocsSupport {
     @DisplayName("검색 API - 입력값 검증 실패 케이스")
     void searchBadRequest() throws Exception {
         // given
-        UserResponse user1 = createUser(1l, "김승환", "김영현 광팬", "@chocoSongEE");
+        UserResponse user1 = createUser(1l, "김영현 광팬", "@chocoSongEE");
 
-        CartoonResponse toon1 = createToon(1l, "김영현의 모험", "용사 김영현이 모험을 떠난다", user1.getNickname());
-        CartoonResponse toon2 = createToon(3l, "용사 김영현", "김영현의 모험 2탄", user1.getNickname());
+        CartoonResponse toon1 = createToon(1l, "김영현의 모험", user1.getTag());
+        CartoonResponse toon2 = createToon(3l, "용사 김영현", user1.getTag());
 
         SearchResponse searchResponse = new SearchResponse(List.of(user1), List.of(toon1, toon2));
         given(searchService.search(anyString(), any())).willReturn(searchResponse);
@@ -116,25 +102,21 @@ class SearchControllerTest extends RestDocsSupport {
                 .andDo(print());
     }
 
-    private CartoonResponse createToon(long id, String title, String description, String author) {
+    private CartoonResponse createToon(long id, String title, String author) {
         return CartoonResponse.builder()
                 .id(id)
                 .title(title)
-                .description(description)
                 .author(author)
-                .profileImageUrl("profile-image-url")
                 .thumbnailUrl("toons/" + id + "/" + id + "-thumb.png")
-                .imagePaths(List.of("toons/" + id + "/" + id + "-0.png", "toons/" + id + "/" + id + "-1.png"))
                 .build();
     }
 
-    private UserResponse createUser(long id, String name, String nickname, String tag) {
+    private UserResponse createUser(long id, String nickname, String tag) {
         return UserResponse.builder()
                 .id(id)
                 .nickname(nickname)
                 .tag(tag)
-                .profileImagePath("profile-image-path")
-                .statusMessage("sample-status-message")
+                .profileImagePath("profileImages/1.png")
                 .build();
     }
 

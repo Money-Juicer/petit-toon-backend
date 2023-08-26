@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 import static com.petit.toon.entity.cartoon.QCartoon.cartoon;
+import static com.petit.toon.entity.user.QProfileImage.profileImage;
 import static com.petit.toon.entity.user.QUser.user;
 
 @Repository
@@ -25,6 +26,7 @@ public class SearchRepository {
     public List<User> searchUser(List<String> keywords, Pageable pageable) {
         return queryFactory.select(user)
                 .from(user)
+                .join(profileImage).on(profileImage.eq(user.profileImage)).fetchJoin()
                 .where(nicknameContainsWith(keywords))
                 .orderBy(userSearchRankOrder(keywords.get(0)).asc())
                 .offset(pageable.getOffset())
