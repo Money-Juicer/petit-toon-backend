@@ -57,6 +57,11 @@ include::api/user/user.adoc[]
 
 include::api/user/profile.adoc[]
 
+[[Rank-API]]
+== Rank API
+
+include::api/rank/rank.adoc[]
+
 [[Exception-API]]
 == Exception API
 

@@ -1,0 +1,25 @@
+[[rank-user]]
+=== 유저 랭킹
+
+==== HTTP Request
+
+include::{snippets}/rank-user/http-request.adoc[]
+include::{snippets}/rank-user/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/rank-user/http-response.adoc[]
+include::{snippets}/rank-user/response-fields.adoc[]
+
+[[rank-cartoon]]
+=== 웹툰 랭킹
+
+==== HTTP Request
+
+include::{snippets}/rank-cartoon/http-request.adoc[]
+include::{snippets}/rank-cartoon/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/rank-cartoon/http-response.adoc[]
+include::{snippets}/rank-cartoon/response-fields.adoc[]
