@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface CartoonRepository extends JpaRepository<Cartoon, Long> {
+public interface CartoonRepository extends JpaRepository<Cartoon, Long>, CustomCartoonRepository {
     @Query("select c from Cartoon c join fetch c.user join fetch c.user.profileImage where c.id = :cartoonId")
     Optional<Cartoon> findCartoonById(long cartoonId);
 
