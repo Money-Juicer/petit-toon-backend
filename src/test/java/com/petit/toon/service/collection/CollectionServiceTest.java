@@ -5,6 +5,7 @@ import com.petit.toon.entity.collection.Bookmark;
 import com.petit.toon.entity.collection.Collection;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.exception.badrequest.AuthorityNotMatchException;
+import com.petit.toon.exception.notfound.BookmarkNotFoundException;
 import com.petit.toon.exception.notfound.CollectionNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.collection.BookmarkRepository;
@@ -251,11 +252,41 @@ class CollectionServiceTest {
         Bookmark bookmark = createBookmark(collection, cartoon);
 
         // when
-        collectionService.removeBookmark(bookmark.getId());
+        collectionService.removeBookmark(user.getId(), bookmark.getId());
 
         // then
         List<Bookmark> bookmarks = bookmarkRepository.findAll();
         assertThat(bookmarks).isEmpty();
+    }
+
+    @Test
+    @DisplayName("removeBookmark - 삭제 권한이 없는 경우")
+    void removeBookmark2() {
+        // given
+        User user = createUser("LEE");
+        User user2 = createUser("KIM");
+        Collection collection = collectionRepository.save(Collection.builder()
+                .user(user)
+                .title("LEE 컬렉션")
+                .closed(false)
+                .build());
+
+        Cartoon toon = createToon(user, "title", "path");
+        Bookmark bookmark = createBookmark(collection, toon);
+
+        // when // then
+        assertThatThrownBy(() -> collectionService.removeBookmark(user2.getId(), bookmark.getId()))
+                .isInstanceOf(AuthorityNotMatchException.class)
+                .hasMessage(AuthorityNotMatchException.MESSAGE);
+    }
+
+    @Test
+    @DisplayName("removeBookmark - Bookmark가 존재하지 않는 경우")
+    void removeBookmark3() {
+        // when // then
+        assertThatThrownBy(() -> collectionService.removeBookmark(1L, 99999L))
+                .isInstanceOf(BookmarkNotFoundException.class)
+                .hasMessage(BookmarkNotFoundException.MESSAGE);
     }
 
     private User createUser(String nickname) {
