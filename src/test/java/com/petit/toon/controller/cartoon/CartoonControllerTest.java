@@ -108,16 +108,6 @@ public class CartoonControllerTest extends RestDocsSupport {
                                 partWithName("description").description("웹툰 설명"),
                                 partWithName("toonImages").description("웹툰 이미지 리스트")
                         ),
-//                        requestFields(
-//                                fieldWithPath("title").description("웹툰 제목"),
-//                                fieldWithPath("description").description("웹툰 설명")),
-//                        queryParameters(
-//                                parameterWithName("title").description("웹툰 제목"),
-//                                parameterWithName("description").description("웹툰 설명")),
-//                                fieldWithPath("toonImages").description("웹툰 이미지 리스트")),
-//                        requestParameters(
-//                                parameterWithName("title").description("웹툰 제목"),
-//                                parameterWithName("description").description("웹툰 설명")),
                         responseFields(
                                 fieldWithPath("toonId").type(JsonFieldType.NUMBER)
                                         .description("생성된 웹툰 ID")

@@ -31,6 +31,8 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -80,6 +82,9 @@ class ProfileControllerTest extends RestDocsSupport {
                 .andExpect(jsonPath("$.profileImageId").value(1l))
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(document("profile-image-upload",
+                        requestParts(
+                                partWithName("profileImage").description("프로필 이미지 파일")
+                        ),
                         responseFields(
                                 fieldWithPath("profileImageId").description("업로드된 프로필 이미지 ID")
                         )
