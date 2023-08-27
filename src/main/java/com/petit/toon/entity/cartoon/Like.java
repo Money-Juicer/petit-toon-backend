@@ -28,17 +28,16 @@ public class Like {
     @CreationTimestamp
     private LocalDateTime createdDateTime;
 
+    @Builder
+    private Like(User user, Cartoon cartoon) {
+        this.user = user;
+        this.cartoon = cartoon;
+    }
+
     /**
      * setCreatedDateTime method is only for test
      */
     public void setCreatedDateTime(LocalDateTime createdDateTime) {
-        this.createdDateTime = createdDateTime;
-    }
-
-    @Builder
-    private Like(User user, Cartoon cartoon, LocalDateTime createdDateTime) {
-        this.user = user;
-        this.cartoon = cartoon;
         this.createdDateTime = createdDateTime;
     }
 }
