@@ -5,6 +5,7 @@ import com.petit.toon.entity.collection.Bookmark;
 import com.petit.toon.entity.collection.Collection;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.exception.badrequest.AuthorityNotMatchException;
+import com.petit.toon.exception.notfound.BookmarkNotFoundException;
 import com.petit.toon.exception.notfound.CartoonNotFoundException;
 import com.petit.toon.exception.notfound.CollectionNotFoundException;
 import com.petit.toon.exception.notfound.UserNotFoundException;
@@ -107,7 +108,14 @@ public class CollectionService {
         collectionRepository.deleteById(collectionId);
     }
 
-    public void removeBookmark(long bookmarkId) {
+    public void removeBookmark(long userId, long bookmarkId) {
+        Bookmark bookmark = bookmarkRepository.findBookmarkById(bookmarkId)
+                .orElseThrow(BookmarkNotFoundException::new);
+
+        if (bookmark.getCollection().getUser().getId() != userId) {
+            throw new AuthorityNotMatchException();
+        }
+
         bookmarkRepository.deleteById(bookmarkId);
     }
 }

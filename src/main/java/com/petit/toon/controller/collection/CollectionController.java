@@ -82,8 +82,9 @@ public class CollectionController {
      * Bookmark 삭제
      */
     @DeleteMapping("/api/v1/bookmark/{bookmarkId}")
-    public ResponseEntity<Void> deleteBookmark(@PathVariable("bookmarkId") long bookmarkId) {
-        collectionService.removeBookmark(bookmarkId);
+    public ResponseEntity<Void> deleteBookmark(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                               @PathVariable("bookmarkId") long bookmarkId) {
+        collectionService.removeBookmark(userId, bookmarkId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
