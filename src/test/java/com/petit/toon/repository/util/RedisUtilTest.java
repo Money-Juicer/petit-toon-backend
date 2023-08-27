@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -97,5 +98,19 @@ class RedisUtilTest {
         // then
         assertThat(trueBits.size()).isEqualTo(5);
         assertThat(trueBits).contains(2l, 3l, 5l, 9l, 14l);
+    }
+
+    @Test
+    @DisplayName("리스트 콜렉션의 데이터를 추가한다")
+    void setList() {
+        // given
+        String key = "rank:user";
+
+        // when
+        redisUtil.setList(key, List.of(1L, 2L, 3L, 4L, 5L));
+
+        // then
+        List<Long> list = redisUtil.getList(key, 0, 3);
+        assertThat(list).containsExactly(1L, 2L, 3L);
     }
 }
