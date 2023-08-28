@@ -182,7 +182,7 @@ class CollectionServiceTest {
 
         // then
         assertThat(response.getBookmarkInfos().size()).isEqualTo(3);
-        assertThat(response.getBookmarkInfos()).extracting("id", "cartoonId", "cartoonTitle", "thumbnailPath")
+        assertThat(response.getBookmarkInfos()).extracting("bookmarkId", "cartoonId", "cartoonTitle", "thumbnailPath")
                 .contains(
                         tuple(bookmark1.getId(), cartoon1.getId(), cartoon1.getTitle(), cartoon1.getThumbnailPath()),
                         tuple(bookmark2.getId(), cartoon2.getId(), cartoon2.getTitle(), cartoon2.getThumbnailPath()),

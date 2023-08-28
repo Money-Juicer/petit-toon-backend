@@ -7,14 +7,14 @@ import lombok.Getter;
 
 @Getter
 public class BookmarkInfoResponse {
-    private long id;
+    private long bookmarkId;
     private long cartoonId;
     private String cartoonTitle;
     private String thumbnailPath;
 
     @Builder
-    private BookmarkInfoResponse(long id, long cartoonId, String cartoonTitle, String thumbnailPath) {
-        this.id = id;
+    private BookmarkInfoResponse(long bookmarkId, long cartoonId, String cartoonTitle, String thumbnailPath) {
+        this.bookmarkId = bookmarkId;
         this.cartoonId = cartoonId;
         this.cartoonTitle = cartoonTitle;
         this.thumbnailPath = thumbnailPath;
@@ -23,7 +23,7 @@ public class BookmarkInfoResponse {
     public static BookmarkInfoResponse of(Bookmark bookmark) {
         Cartoon tmpCartoon = bookmark.getCartoon();
         return BookmarkInfoResponse.builder()
-                .id(bookmark.getId())
+                .bookmarkId(bookmark.getId())
                 .cartoonId(tmpCartoon.getId())
                 .cartoonTitle(tmpCartoon.getTitle())
                 .thumbnailPath(tmpCartoon.getThumbnailPath())

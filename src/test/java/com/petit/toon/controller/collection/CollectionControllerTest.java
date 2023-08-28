@@ -225,7 +225,7 @@ class CollectionControllerTest extends RestDocsSupport {
                         responseFields(
                                 fieldWithPath("bookmarkInfos").type(JsonFieldType.ARRAY)
                                         .description("북마크 목록 데이터"),
-                                fieldWithPath("bookmarkInfos[].id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("bookmarkInfos[].bookmarkId").type(JsonFieldType.NUMBER)
                                         .description("북마크 ID"),
                                 fieldWithPath("bookmarkInfos[].cartoonId").type(JsonFieldType.NUMBER)
                                         .description("북마크한 웹툰 ID"),
@@ -269,9 +269,9 @@ class CollectionControllerTest extends RestDocsSupport {
                 .build();
     }
 
-    private BookmarkInfoResponse createBookmarkInfo(long id, long cartoonId, String cartoonTitle, String path) {
+    private BookmarkInfoResponse createBookmarkInfo(long bookmarkId, long cartoonId, String cartoonTitle, String path) {
         return BookmarkInfoResponse.builder()
-                .id(id)
+                .bookmarkId(bookmarkId)
                 .cartoonId(cartoonId)
                 .cartoonTitle(cartoonTitle)
                 .thumbnailPath(path)
