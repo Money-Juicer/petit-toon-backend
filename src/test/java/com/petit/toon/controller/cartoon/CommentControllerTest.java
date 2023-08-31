@@ -24,6 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -130,7 +131,11 @@ class CommentControllerTest extends RestDocsSupport {
                                 fieldWithPath("comments[].content").type(JsonFieldType.STRING)
                                         .description("댓글 내용"),
                                 fieldWithPath("comments[].myComment").type(JsonFieldType.BOOLEAN)
-                                        .description("자신의 댓글 여부 (true: 조회한 유저의 댓글 | false: 다른 사람)")
+                                        .description("자신의 댓글 여부 (true: 조회한 유저의 댓글 | false: 다른 사람)"),
+                                fieldWithPath("comments[].createdDateTime").type(JsonFieldType.STRING)
+                                        .description("댓글 생성 시각"),
+                                fieldWithPath("comments[].modifiedDateTime").type(JsonFieldType.STRING)
+                                        .description("댓글 수정 시각")
                         )
                 ));
     }
@@ -165,7 +170,11 @@ class CommentControllerTest extends RestDocsSupport {
                                 fieldWithPath("comments[].cartoonId").type(JsonFieldType.NUMBER)
                                         .description("댓글 단 웹툰 ID"),
                                 fieldWithPath("comments[].content").type(JsonFieldType.STRING)
-                                        .description("댓글 내용")
+                                        .description("댓글 내용"),
+                                fieldWithPath("comments[].createdDateTime").type(JsonFieldType.STRING)
+                                        .description("댓글 생성 시각"),
+                                fieldWithPath("comments[].modifiedDateTime").type(JsonFieldType.STRING)
+                                        .description("댓글 수정 시각")
                         )
                 ));
     }
@@ -185,19 +194,25 @@ class CommentControllerTest extends RestDocsSupport {
     }
 
     private CommentResponse createResponse(long userId, long commentId, String content, boolean myComment) {
+        LocalDateTime sample = LocalDateTime.now();
         return CommentResponse.builder()
                 .userId(userId)
                 .commentId(commentId)
                 .content(content)
                 .myComment(myComment)
+                .createdDateTime(sample)
+                .modifiedDateTime(sample)
                 .build();
     }
 
     private MyCommentResponse createMyResponse(long commentId, long cartoonId, String content) {
+        LocalDateTime sample = LocalDateTime.now();
         return MyCommentResponse.builder()
                 .commentId(commentId)
                 .cartoonId(cartoonId)
                 .content(content)
+                .createdDateTime(sample)
+                .modifiedDateTime(sample)
                 .build();
     }
 
