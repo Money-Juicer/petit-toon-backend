@@ -100,6 +100,37 @@ public class RedisUtil {
         return listOperations.rightPushAll(key, value);
     }
 
+    /**
+     * Set Redis List with elements.
+     * Just Do LeftPush in List at key, with elements.
+     * Then, trim list 0 ~ (limit-1) [Size = limit]
+     */
+    public void setListWithLimit(String key, List<Long> elements, long limit, long timeout, TimeUnit timeUnit) {
+        List<String> value = elements.stream()
+                .map(String::valueOf)
+                .collect(Collectors.toList());
+        ListOperations<String, String> listOperations = redisTemplate.opsForList();
+
+        redisTemplate.expire(key, timeout, timeUnit);
+        listOperations.leftPushAll(key, value);
+
+        // Redis List Size Limit
+        listOperations.trim(key, 0, limit - 1);
+//        return listOperations.size(key);
+    }
+
+    public Long pushElementWithLimit(String key, long element, long limit) {
+        String value = String.valueOf(element);
+        ListOperations<String, String> listOperations = redisTemplate.opsForList();
+
+        if (listOperations.size(key) == limit) {
+            listOperations.rightPop(key);
+        }
+
+        return listOperations.leftPush(key, value);
+    }
+
+
     public List<Long> getList(String key, long start, long end) {
         ListOperations<String, String> listOperations = redisTemplate.opsForList();
         List<String> elements = listOperations.range(key, start, end - 1);
