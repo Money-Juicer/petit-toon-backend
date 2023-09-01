@@ -6,9 +6,9 @@ import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.UserRepository;
+import com.petit.toon.service.cartoon.event.CartoonUploadedEvent;
 import com.petit.toon.util.RedisUtil;
 import jakarta.transaction.Transactional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,9 +63,9 @@ class CartoonFeedUpdateServiceTest {
         Cartoon cartoon3 = createCartoon(user2);
 
         // when
-        cartoonFeedUpdateService.feedUpdateToFollower(user1.getId(), cartoon1.getId());
-        cartoonFeedUpdateService.feedUpdateToFollower(user1.getId(), cartoon2.getId());
-        cartoonFeedUpdateService.feedUpdateToFollower(user2.getId(), cartoon3.getId());
+        cartoonFeedUpdateService.feedUpdateToFollower(new CartoonUploadedEvent(user1.getId(), cartoon1.getId()));
+        cartoonFeedUpdateService.feedUpdateToFollower(new CartoonUploadedEvent(user1.getId(), cartoon2.getId()));
+        cartoonFeedUpdateService.feedUpdateToFollower(new CartoonUploadedEvent(user2.getId(), cartoon3.getId()));
 
         // then
         List<Long> list1 = redisUtil.getList(FEED_KEY_PREFIX + user1.getId(), 0, 0);

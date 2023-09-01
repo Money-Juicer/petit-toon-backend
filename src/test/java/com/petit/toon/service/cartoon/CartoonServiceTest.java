@@ -11,6 +11,7 @@ import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.cartoon.ImageRepository;
 import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
+import com.petit.toon.service.cartoon.event.CartoonUploadedEvent;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
 import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
 import com.petit.toon.service.cartoon.response.CartoonListResponse;
@@ -26,6 +27,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
+@RecordApplicationEvents
 public class CartoonServiceTest {
 
     @Autowired
@@ -62,6 +66,9 @@ public class CartoonServiceTest {
 
     @Autowired
     ImageService imageService;
+
+    @Autowired
+    ApplicationEvents applicationEvents;
 
     @Autowired
     RedisUtil redisUtil;
@@ -125,6 +132,9 @@ public class CartoonServiceTest {
         assertThat(toon2.getDescription()).isEqualTo("sample-description2");
         assertThat(toon2.getImages().get(0).getOriginalFileName()).isEqualTo("sample1.png");
         assertThat(toon2.getImages().get(1).getOriginalFileName()).isEqualTo("sample2.png");
+
+        // then - event evoke test
+        assertThat(applicationEvents.stream(CartoonUploadedEvent.class).count()).isEqualTo(2l);
     }
 
     @Test
