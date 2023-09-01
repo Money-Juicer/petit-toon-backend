@@ -1,8 +1,10 @@
 package com.petit.toon.service.cartoon;
 
 import com.petit.toon.repository.user.FollowRepository;
+import com.petit.toon.service.cartoon.event.CartoonUploadedEvent;
 import com.petit.toon.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +22,12 @@ public class CartoonFeedUpdateService {
     private final RedisUtil redisUtil;
 
     @Async
-    public void feedUpdateToFollower(long authorId, long cartoonId) {
-        List<Long> followers = followRepository.findFollowerIdsByFolloweeId(authorId);
+    @EventListener
+    public void feedUpdateToFollower(CartoonUploadedEvent event) {
+        List<Long> followers = followRepository.findFollowerIdsByFolloweeId(event.getAuthorId());
         for (long followerId : followers) {
             String key = FEED_KEY_PREFIX + followerId;
-            redisUtil.pushElementWithLimit(key, cartoonId, 100);
+            redisUtil.pushElementWithLimit(key, event.getCartoonId(), 100);
         }
     }
 

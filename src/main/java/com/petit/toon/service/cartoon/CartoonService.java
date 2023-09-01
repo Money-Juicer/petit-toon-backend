@@ -9,6 +9,7 @@ import com.petit.toon.exception.notfound.CartoonNotFoundException;
 import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.user.UserRepository;
+import com.petit.toon.service.cartoon.event.CartoonUploadedEvent;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
 import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
 import com.petit.toon.service.cartoon.response.CartoonListResponse;
@@ -17,6 +18,7 @@ import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
 import com.petit.toon.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,13 +36,14 @@ import java.util.stream.Collectors;
 public class CartoonService {
     public static final String VIEW_KEY_PREFIX = "view:toon:";
 
+
+    private final ApplicationEventPublisher publisher;
+
     private final CartoonRepository cartoonRepository;
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final LikeService likeService;
     private final RedisUtil redisUtil;
-
-    private final CartoonFeedUpdateService cartoonFeedUpdateService;
 
     @Value("${app.toon.dir}")
     private String toonDirectory;
@@ -67,7 +70,7 @@ public class CartoonService {
         cartoon.setThumbnailPath(thumbnailPath);
         cartoonRepository.save(cartoon);
 
-        cartoonFeedUpdateService.feedUpdateToFollower(userId, cartoon.getId());
+        publisher.publishEvent(new CartoonUploadedEvent(userId, cartoon.getId()));
         return new CartoonUploadResponse(cartoon.getId());
     }
 
