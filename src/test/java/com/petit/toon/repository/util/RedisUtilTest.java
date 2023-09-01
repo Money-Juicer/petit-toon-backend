@@ -113,4 +113,39 @@ class RedisUtilTest {
         List<Long> list = redisUtil.getList(key, 0, 3);
         assertThat(list).containsExactly(1L, 2L, 3L);
     }
+
+    @Test
+    @DisplayName("리스트에 value 추가")
+    void pushElem() {
+        //given
+        String key = "feed:1";
+
+        // when
+        redisUtil.pushElementWithLimit(key, 1L, 100);
+        redisUtil.pushElementWithLimit(key, 2L, 100);
+
+        // then
+        List<Long> list = redisUtil.getList(key, 0, 2);
+        assertThat(list).containsExactly(2L, 1L);
+    }
+
+    @Test
+    @DisplayName("웹툰 피드 Expire 타임 테스트")
+    void pushElemWithTimeLimit() throws InterruptedException {
+        //given
+        String key = "feed:2";
+
+        // when
+        redisUtil.pushElementWithLimit(key, 1L, 100);
+        List<Long> list1 = redisUtil.getList(key, 0, 2, 1, TimeUnit.SECONDS);
+
+        redisUtil.pushElementWithLimit(key, 2L, 100);
+        List<Long> list2 = redisUtil.getList(key, 0, 2, 1, TimeUnit.SECONDS);
+
+        // then
+        MILLISECONDS.sleep(1000);
+        assertThat(list1).containsExactly(1L);
+        assertThat(list2).containsExactly(2L, 1L);
+        assertThat(redisUtil.hasKey(key)).isFalse();
+    }
 }
