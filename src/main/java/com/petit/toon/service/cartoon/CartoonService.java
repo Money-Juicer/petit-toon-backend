@@ -40,6 +40,8 @@ public class CartoonService {
     private final LikeService likeService;
     private final RedisUtil redisUtil;
 
+    private final CartoonFeedUpdateService cartoonFeedUpdateService;
+
     @Value("${app.toon.dir}")
     private String toonDirectory;
 
@@ -65,6 +67,7 @@ public class CartoonService {
         cartoon.setThumbnailPath(thumbnailPath);
         cartoonRepository.save(cartoon);
 
+        cartoonFeedUpdateService.feedUpdateToFollower(userId, cartoon.getId());
         return new CartoonUploadResponse(cartoon.getId());
     }
 
