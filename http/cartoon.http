@@ -76,3 +76,13 @@ Authorization: {{accessToken}}
 
 POST localhost:8080/api/v1/toon/1/view
 Authorization: {{accessToken}}
+
+###
+PATCH localhost:8080/api/v1/toon/2
+Content-Type: application/json
+Content-Encoding: UTF-8
+Authorization: {{accessToken}}
+
+{
+  "title": "김영현의 모험"
+}
