@@ -1,5 +1,6 @@
 package com.petit.toon.service.cartoon;
 
+import com.petit.toon.config.AsyncConfig;
 import com.petit.toon.entity.cartoon.Cartoon;
 import com.petit.toon.entity.user.Follow;
 import com.petit.toon.entity.user.User;
@@ -14,9 +15,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.petit.toon.service.feed.FeedService.FEED_KEY_PREFIX;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @Transactional
 class CartoonFeedUpdateServiceTest {
-
     @Autowired
     UserRepository userRepository;
 
@@ -40,6 +42,9 @@ class CartoonFeedUpdateServiceTest {
 
     @Autowired
     CartoonFeedUpdateService cartoonFeedUpdateService;
+
+    @Autowired
+    AsyncConfig asyncConfig;
 
     @AfterEach
     void tearDown() {
@@ -66,6 +71,13 @@ class CartoonFeedUpdateServiceTest {
         cartoonFeedUpdateService.feedUpdateToFollower(new CartoonUploadedEvent(user1.getId(), cartoon1.getId()));
         cartoonFeedUpdateService.feedUpdateToFollower(new CartoonUploadedEvent(user1.getId(), cartoon2.getId()));
         cartoonFeedUpdateService.feedUpdateToFollower(new CartoonUploadedEvent(user2.getId(), cartoon3.getId()));
+
+        ThreadPoolTaskExecutor executor = (ThreadPoolTaskExecutor) asyncConfig.feedUpdateExecutor();
+        try {
+            executor.getThreadPoolExecutor().awaitTermination(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
         // then
         List<Long> list1 = redisUtil.getList(FEED_KEY_PREFIX + user1.getId(), 0, 0);
