@@ -79,9 +79,9 @@ public class LikeScheduler {
                 orElseThrow(CartoonNotFoundException::new);
 
         if (isLike) {
-            likeRepository.saveAll(createLikes(insertUsers, cartoon));
+            likeRepository.bulkInsert(createLikes(insertUsers, cartoon));
         } else {
-            dislikeRepository.saveAll(createDislikes(insertUsers, cartoon));
+            dislikeRepository.bulkInsert(createDislikes(insertUsers, cartoon));
         }
     }
 
@@ -91,9 +91,9 @@ public class LikeScheduler {
                 .collect(Collectors.toList());
 
         if (isLike) {
-            likeRepository.deleteAllById(deleteIds);
+            likeRepository.deleteAllByIdIn(deleteIds);
         } else {
-            dislikeRepository.deleteAllById(deleteIds);
+            dislikeRepository.deleteAllByIdIn(deleteIds);
         }
     }
 

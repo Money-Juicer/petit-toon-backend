@@ -57,13 +57,17 @@ class LikeSchedulerTest {
         // given
         User user1 = createUser("@hotoran");
         User user2 = createUser("@timel2ss"); // cache: X, DB: O
-        User user3 = createUser("@초코송이00"); // cache: O, DB: O
-        User user4 = createUser("@Iced"); // cache: O, DB: X
+        User user3 = createUser("@kingggg"); // cache: X, DB: O
+        User user4 = createUser("@초코송이00"); // cache: O, DB: O
+        User user5 = createUser("@Iced"); // cache: O, DB: X
+        User user6 = createUser("@hoto"); // cache: O, DB: X
 
         Cartoon cartoon = createToon(user1, "sample-title");
 
+        likeService.like(user6.getId(), cartoon.getId());
+        likeService.like(user5.getId(), cartoon.getId());
         likeService.like(user4.getId(), cartoon.getId());
-        likeService.like(user3.getId(), cartoon.getId());
+        createLike(user4, cartoon);
         createLike(user3, cartoon);
         createLike(user2, cartoon);
 
@@ -72,7 +76,7 @@ class LikeSchedulerTest {
 
         // then
         List<Long> userIds = likeRepository.findUserIdByCartoonId(cartoon.getId());
-        assertThat(userIds).contains(user3.getId(), user4.getId());
+        assertThat(userIds).contains(user4.getId(), user5.getId(), user6.getId());
     }
 
     private User createUser(String nickname) {
