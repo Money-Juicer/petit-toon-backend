@@ -12,6 +12,7 @@ import com.petit.toon.repository.cartoon.ImageRepository;
 import com.petit.toon.repository.user.ProfileImageRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.event.CartoonUploadedEvent;
+import com.petit.toon.service.cartoon.request.CartoonUpdateServiceRequest;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
 import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
 import com.petit.toon.service.cartoon.response.CartoonListResponse;
@@ -135,6 +136,66 @@ public class CartoonServiceTest {
 
         // then - event evoke test
         assertThat(applicationEvents.stream(CartoonUploadedEvent.class).count()).isEqualTo(2l);
+    }
+
+    @Test
+    @DisplayName("웹툰 정보를 변경한다")
+    void updateCartoonInfo() {
+        // given
+        User user = createUser("지훈");
+        Cartoon cartoon = createCartoon(user);
+
+        CartoonUpdateServiceRequest request = CartoonUpdateServiceRequest.builder()
+                .userId(user.getId())
+                .toonId(cartoon.getId())
+                .title("changed-title")
+                .description("changed-description")
+                .build();
+
+        // when
+        cartoonService.updateCartoonInfo(request);
+
+        // then
+        Cartoon findCartoon = cartoonRepository.findById(cartoon.getId()).get();
+        assertThat(findCartoon.getTitle()).isEqualTo("changed-title");
+        assertThat(findCartoon.getDescription()).isEqualTo("changed-description");
+    }
+
+    @Test
+    @DisplayName("웹툰 정보를 변경한다 - 웹툰이 존재하지 않는 경우")
+    void updateCartoonInfo2() {
+        // given
+        CartoonUpdateServiceRequest request = CartoonUpdateServiceRequest.builder()
+                .userId(1L)
+                .toonId(99999L)
+                .title("changed-title")
+                .description("changed-description")
+                .build();
+
+        // when // then
+        assertThatThrownBy(() -> cartoonService.updateCartoonInfo(request))
+                .isInstanceOf(CartoonNotFoundException.class)
+                .hasMessage(CartoonNotFoundException.MESSAGE);
+    }
+
+    @Test
+    @DisplayName("웹툰 정보를 변경한다 - 변경 권한이 없는 경우")
+    void updateCartoonInfo3() {
+        // given
+        User user = createUser("지훈");
+        Cartoon cartoon = createCartoon(user);
+
+        CartoonUpdateServiceRequest request = CartoonUpdateServiceRequest.builder()
+                .userId(99999L)
+                .toonId(cartoon.getId())
+                .title("changed-title")
+                .description("changed-description")
+                .build();
+
+        // when // then
+        assertThatThrownBy(() -> cartoonService.updateCartoonInfo(request))
+                .isInstanceOf(AuthorityNotMatchException.class)
+                .hasMessage(AuthorityNotMatchException.MESSAGE);
     }
 
     @Test

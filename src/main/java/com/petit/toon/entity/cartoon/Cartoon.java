@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -64,5 +65,14 @@ public class Cartoon {
 
     public void increaseViewCount() {
         viewCount++;
+    }
+
+    public void updateInfo(Cartoon cartoon) {
+        if (StringUtils.hasText(cartoon.title)) {
+            this.title = cartoon.title;
+        }
+        if (StringUtils.hasText(cartoon.description)) {
+            this.description = cartoon.description;
+        }
     }
 }

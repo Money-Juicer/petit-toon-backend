@@ -10,6 +10,7 @@ import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.event.CartoonUploadedEvent;
+import com.petit.toon.service.cartoon.request.CartoonUpdateServiceRequest;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
 import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
 import com.petit.toon.service.cartoon.response.CartoonListResponse;
@@ -101,6 +102,22 @@ public class CartoonService {
         Cartoon cartoon = cartoonRepository.findCartoonById(toonId)
                 .orElseThrow(CartoonNotFoundException::new);
         cartoon.increaseViewCount();
+    }
+
+    public void updateCartoonInfo(CartoonUpdateServiceRequest request) {
+        Cartoon cartoon = cartoonRepository.findById(request.getToonId())
+                .orElseThrow(CartoonNotFoundException::new);
+
+        if (cartoon.getUser().getId() != request.getUserId()) {
+            throw new AuthorityNotMatchException();
+        }
+
+        Cartoon updateForm = Cartoon.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .build();
+
+        cartoon.updateInfo(updateForm);
     }
 
     public void delete(Long userId, Long toonId) {

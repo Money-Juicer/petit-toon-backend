@@ -1,5 +1,6 @@
 package com.petit.toon.controller.cartoon;
 
+import com.petit.toon.controller.cartoon.request.CartoonUpdateRequest;
 import com.petit.toon.controller.cartoon.request.CartoonUploadRequest;
 import com.petit.toon.service.cartoon.CartoonService;
 import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
@@ -35,6 +36,14 @@ public class CartoonController {
     public ResponseEntity<CartoonDetailResponse> getToon(@AuthenticationPrincipal(expression = "user.id") long userId,
                                                          @PathVariable("toonId") long toonId) {
         return ResponseEntity.ok(cartoonService.findOne(userId, toonId));
+    }
+
+    @PatchMapping("/api/v1/toon/{toonId}")
+    public ResponseEntity<Void> updateToon(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                           @Valid @RequestBody CartoonUpdateRequest request,
+                                           @PathVariable("toonId") long toonId) {
+        cartoonService.updateCartoonInfo(request.toServiceRequest(userId, toonId));
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/api/v1/toon/user/{userId}")
