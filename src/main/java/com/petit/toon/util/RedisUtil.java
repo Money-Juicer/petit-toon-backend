@@ -1,10 +1,7 @@
 package com.petit.toon.util;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -119,15 +116,32 @@ public class RedisUtil {
 //        return listOperations.size(key);
     }
 
-    public Long pushElementWithLimit(String key, long element, long limit) {
+    public void pushElementWithLimit(String key, long element, long limit) {
         String value = String.valueOf(element);
-        ListOperations<String, String> listOperations = redisTemplate.opsForList();
+        redisTemplate.execute(new SessionCallback<Object>() {
+            @Override
+            public Object execute(RedisOperations redisOperations) {
+                long listSize = redisOperations.opsForList().size(key);
+                redisOperations.watch(key);
+                redisOperations.multi();
 
-        if (listOperations.size(key) == limit) {
-            listOperations.rightPop(key);
-        }
+                if (listSize == limit) {
+                    redisOperations.opsForList().rightPop(key);
+                }
+                redisOperations.opsForList().leftPush(key, value);
 
-        return listOperations.leftPush(key, value);
+                return redisOperations.exec();
+            }
+        });
+//        ListOperations<String, String> listOperations = redisTemplate.opsForList();
+//
+//
+//        listOperations.getOperations().watch(key);
+//        listOperations.getOperations().multi();
+//        if (listOperations.size(key) == limit) {
+//            listOperations.rightPop(key);
+//        }
+//        listOperations.leftPush(key, value);
     }
 
 

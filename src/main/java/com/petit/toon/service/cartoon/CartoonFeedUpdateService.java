@@ -23,16 +23,20 @@ public class CartoonFeedUpdateService {
     private final FollowRepository followRepository;
     private final RedisUtil redisUtil;
 
-    @Async(value = "feedUpdateExecutor")
     @EventListener
     public void feedUpdateToFollower(CartoonUploadedEvent event) {
         log.info("Cartoon Uploaded. UserId {} starts feed update.", event.getAuthorId());
         List<Long> followers = followRepository.findFollowerIdsByFolloweeId(event.getAuthorId());
         for (long followerId : followers) {
             String key = FEED_KEY_PREFIX + followerId;
-            redisUtil.pushElementWithLimit(key, event.getCartoonId(), 100);
+            pushToUserFeed(key, event.getCartoonId());
         }
         log.info("UserId {} ends feed update.", event.getAuthorId());
+    }
+
+    @Async
+    protected void pushToUserFeed(String key, long value) {
+        redisUtil.pushElementWithLimit(key, value, 100);
     }
 
 }
