@@ -166,10 +166,12 @@ class CommentServiceTest {
     }
 
     private Comment createComment(User user, Cartoon cartoon) {
-        return commentRepository.save(Comment.builder()
+        Comment comment = commentRepository.save(Comment.builder()
                 .user(user)
                 .cartoon(cartoon)
                 .content("sample-content")
                 .build());
+        commentRepository.flush();
+        return comment;
     }
 }
