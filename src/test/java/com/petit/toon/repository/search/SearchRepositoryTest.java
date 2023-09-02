@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.petit.toon.service.user.ProfileImageService.DEFAULT_PROFILE_IMAGE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -144,11 +145,13 @@ class SearchRepositoryTest {
     }
 
     private Cartoon createToon(User user, String title, String description) {
-        return cartoonRepository.save(Cartoon.builder()
+        Cartoon cartoon = cartoonRepository.save(Cartoon.builder()
                 .user(user)
                 .title(title)
                 .description(description)
                 .build());
+        cartoonRepository.flush();
+        return cartoon;
     }
 
     private User createUser(String name, String nickname) {
@@ -158,6 +161,13 @@ class SearchRepositoryTest {
                 .nickname(nickname)
                 .build();
         user.setProfileImage(profileImage);
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        userRepository.flush();
+        try {
+            TimeUnit.MILLISECONDS.sleep(200);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return savedUser;
     }
 }

@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,6 +21,15 @@ public class CustomCartoonRepositoryImpl implements CustomCartoonRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public List<Cartoon> findAllWithExactOrder(List<Long> ids) {
+        return queryFactory.select(cartoon)
+                .from(cartoon)
+                .where(cartoon.id.in(ids))
+                .orderBy(orderByIdsExactOrder(ids).asc())
+                .fetch();
+    }
+
+    @Override
     public List<Cartoon> findAllWithUserWithExactOrder(List<Long> ids) {
         return queryFactory.select(cartoon)
                 .from(cartoon)
@@ -30,12 +40,15 @@ public class CustomCartoonRepositoryImpl implements CustomCartoonRepository {
     }
 
     @Override
-    public List<Cartoon> findAllWithFollower(Long userId) {
+    public List<Cartoon> findAllWithFollower(Long userId, Pageable pageable) {
         return queryFactory.select(cartoon)
                 .from(cartoon)
                 .join(follow).on(follow.followee.eq(cartoon.user))
                 .join(user).on(follow.follower.eq(user))
                 .where(cartoon.user.isInfluencer.and(user.id.eq(userId)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(cartoon.createdDateTime.desc())
                 .fetch();
     }
 

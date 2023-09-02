@@ -50,12 +50,18 @@ public class LikeService {
         addData(keys.dislikeKey, userId);
     }
 
-    public long count(long toonId) {
-        String likeKey = LIKE_KEY_PREFIX + toonId;
-        if (!redisUtil.hasKey(likeKey)) {
-            loadLikesFromDB(likeKey, toonId);
+    public long count(long toonId, boolean isLike) {
+        String key = isLike ? LIKE_KEY_PREFIX + toonId : DISLIKE_KEY_PREFIX + toonId;
+        if (redisUtil.hasKey(key)) {
+            return redisUtil.countBits(key);
         }
-        return redisUtil.countBits(likeKey);
+
+        if (isLike) {
+            loadLikesFromDB(key, toonId);
+        } else {
+            loadDislikesFromDB(key, toonId);
+        }
+        return redisUtil.countBits(key);
     }
 
     public LikeStatus isLiked(long userId, long toonId) {

@@ -82,7 +82,7 @@ public class CartoonService {
     public CartoonDetailResponse findOne(long userId, long toonId) {
         Cartoon cartoon = cartoonRepository.findCartoonById(toonId)
                 .orElseThrow(CartoonNotFoundException::new);
-        long likeCount = likeService.count(toonId);
+        long likeCount = likeService.count(toonId, true);
         LikeStatus likeStatus = likeService.isLiked(userId, toonId);
         return CartoonDetailResponse.of(cartoon, likeCount, likeStatus);
     }

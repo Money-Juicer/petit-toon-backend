@@ -63,6 +63,10 @@ public class Cartoon {
         this.thumbnailPath = thumbnailPath;
     }
 
+    public void setCreatedDateTime(LocalDateTime createdDateTime) {
+        this.createdDateTime = createdDateTime;
+    }
+
     public void increaseViewCount() {
         viewCount++;
     }

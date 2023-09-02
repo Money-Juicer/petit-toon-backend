@@ -189,7 +189,7 @@ class LikeServiceTest {
         likeService.like(user3.getId(), cartoon.getId());
 
         // when
-        long count = likeService.count(cartoon.getId());
+        long count = likeService.count(cartoon.getId(), true);
 
         // then
         assertThat(count).isEqualTo(3L);

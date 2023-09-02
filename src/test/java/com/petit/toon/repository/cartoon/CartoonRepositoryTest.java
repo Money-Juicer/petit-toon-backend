@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
@@ -111,8 +112,9 @@ public class CartoonRepositoryTest {
         Cartoon cartoon9 = createCartoon(author5, "title9");
         Cartoon cartoon10 = createCartoon(author5, "title10");
 
+        PageRequest request = PageRequest.of(0, 10);
         // when
-        List<Cartoon> followCartoons = cartoonRepository.findAllWithFollower(user.getId());
+        List<Cartoon> followCartoons = cartoonRepository.findAllWithFollower(user.getId(), request);
 
         // then
         assertThat(followCartoons.size()).isEqualTo(8);
