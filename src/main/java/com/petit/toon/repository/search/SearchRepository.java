@@ -23,23 +23,23 @@ public class SearchRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<User> searchUser(List<String> keywords, Pageable pageable) {
+    public List<User> findUser(List<String> keywords, Pageable pageable) {
         return queryFactory.select(user)
                 .from(user)
                 .join(profileImage).on(profileImage.eq(user.profileImage)).fetchJoin()
                 .where(nicknameContainsWith(keywords))
-                .orderBy(userSearchRankOrder(keywords.get(0)).asc())
+                .orderBy(userSearchRankOrder(keywords.get(0)).asc(), user.createdDateTime.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
-    public List<Cartoon> searchCartoon(List<String> keywords, Pageable pageable) {
+    public List<Cartoon> findCartoon(List<String> keywords, Pageable pageable) {
         return queryFactory.select(cartoon)
                 .from(cartoon)
                 .join(user).on(user.eq(cartoon.user)).fetchJoin()
                 .where(titleContainsWith(keywords))
-                .orderBy(toonSearchRankOrder(keywords.get(0)).asc())
+                .orderBy(cartoonSearchRankOrder(keywords.get(0)).asc(), cartoon.createdDateTime.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -74,7 +74,7 @@ public class SearchRepository {
         return builder;
     }
 
-    private NumberExpression<Integer> toonSearchRankOrder(String keyword) {
+    private NumberExpression<Integer> cartoonSearchRankOrder(String keyword) {
         return new CaseBuilder()
                 .when(cartoon.title.eq(keyword)).then(0)
                 .when(cartoon.title.like(keyword + "%")).then(1)

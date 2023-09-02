@@ -1,8 +1,9 @@
 package com.petit.toon.service.search;
 
 import com.petit.toon.repository.search.SearchRepository;
+import com.petit.toon.service.cartoon.response.CartoonListResponse;
 import com.petit.toon.service.cartoon.response.CartoonResponse;
-import com.petit.toon.service.search.response.SearchResponse;
+import com.petit.toon.service.user.response.UserListResponse;
 import com.petit.toon.service.user.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -19,22 +20,27 @@ import java.util.stream.Collectors;
 public class SearchService {
     private final SearchRepository searchRepository;
 
-    public SearchResponse search(String keyword, Pageable pageable) {
+    public UserListResponse searchUser(String keyword, Pageable pageable) {
         List<String> keywords = Arrays.stream(keyword.trim().split(" ")).toList();
         List<UserResponse> userResponses = getUserInfoWith(keywords, pageable);
+        return new UserListResponse(userResponses);
+    }
+
+    public CartoonListResponse searchCartoon(String keyword, Pageable pageable) {
+        List<String> keywords = Arrays.stream(keyword.trim().split(" ")).toList();
         List<CartoonResponse> cartoonResponses = getToonInfoWith(keywords, pageable);
-        return new SearchResponse(userResponses, cartoonResponses);
+        return new CartoonListResponse(cartoonResponses);
     }
 
     private List<UserResponse> getUserInfoWith(List<String> keywords, Pageable pageable) {
-        return searchRepository.searchUser(keywords, pageable)
+        return searchRepository.findUser(keywords, pageable)
                 .stream()
                 .map(UserResponse::of)
                 .collect(Collectors.toList());
     }
 
     private List<CartoonResponse> getToonInfoWith(List<String> keywords, Pageable pageable) {
-        return searchRepository.searchCartoon(keywords, pageable)
+        return searchRepository.findCartoon(keywords, pageable)
                 .stream()
                 .map(CartoonResponse::of)
                 .collect(Collectors.toList());

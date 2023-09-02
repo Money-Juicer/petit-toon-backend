@@ -1,8 +1,9 @@
 package com.petit.toon.controller.search;
 
 import com.petit.toon.controller.search.request.SearchRequest;
+import com.petit.toon.service.cartoon.response.CartoonListResponse;
 import com.petit.toon.service.search.SearchService;
-import com.petit.toon.service.search.response.SearchResponse;
+import com.petit.toon.service.user.response.UserListResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchController {
     private final SearchService searchService;
 
-    @GetMapping("/api/v1/search")
-    public ResponseEntity<SearchResponse> search(@Valid @ModelAttribute SearchRequest searchRequest,
-                                                 @PageableDefault Pageable pageable) {
-        SearchResponse response = searchService.search(searchRequest.getKeyword(), pageable);
+    @GetMapping("/api/v1/search/user")
+    public ResponseEntity<UserListResponse> searchUser(@Valid @ModelAttribute SearchRequest searchRequest,
+                                                       @PageableDefault Pageable pageable) {
+        UserListResponse response = searchService.searchUser(searchRequest.getKeyword(), pageable);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/api/v1/search/toon")
+    public ResponseEntity<CartoonListResponse> searchToon(@Valid @ModelAttribute SearchRequest searchRequest,
+                                                          @PageableDefault Pageable pageable) {
+        CartoonListResponse response = searchService.searchCartoon(searchRequest.getKeyword(), pageable);
         return ResponseEntity.ok(response);
     }
 }

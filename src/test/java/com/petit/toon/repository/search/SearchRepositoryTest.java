@@ -50,13 +50,50 @@ class SearchRepositoryTest {
         User user6 = createUser("kk", "김영현");
 
         // when
-        List<User> findUsers = searchRepository.searchUser(List.of("김"), PageRequest.of(0, 10));
+        List<User> findUsers = searchRepository.findUser(List.of("김"), PageRequest.of(0, 10));
 
         // then
         assertThat(findUsers.size()).isEqualTo(2);
         assertThat(findUsers).extracting("id")
                 .containsExactly(
                         user5.getId(), user6.getId()
+                );
+    }
+
+    @Test
+    @DisplayName("nickname에 keyword가 포함된 유저를 찾는다 - paging query test")
+    void searchUser2() {
+        // given
+        User user1 = createUser("김영현", "김영현1");
+        User user2 = createUser("영현김", "김영현2");
+        User user3 = createUser("김", "김영현3");
+        User user4 = createUser("현김영", "김영현4");
+        User user5 = createUser("kim", "김영현5");
+        User user6 = createUser("kk", "김영현6");
+
+        // when
+        PageRequest pageRequest1 = PageRequest.of(0, 2);
+        PageRequest pageRequest2 = PageRequest.of(1, 2);
+        PageRequest pageRequest3 = PageRequest.of(2, 2);
+        List<User> findUsers1 = searchRepository.findUser(List.of("김영현"), pageRequest1);
+        List<User> findUsers2 = searchRepository.findUser(List.of("김영현"), pageRequest2);
+        List<User> findUsers3 = searchRepository.findUser(List.of("김영현"), pageRequest3);
+
+        // then
+        assertThat(findUsers1.size()).isEqualTo(2);
+        assertThat(findUsers1).extracting("id")
+                .containsExactly(
+                        user6.getId(), user5.getId()
+                );
+        assertThat(findUsers2.size()).isEqualTo(2);
+        assertThat(findUsers2).extracting("id")
+                .containsExactly(
+                        user4.getId(), user3.getId()
+                );
+        assertThat(findUsers3.size()).isEqualTo(2);
+        assertThat(findUsers3).extracting("id")
+                .containsExactly(
+                        user2.getId(), user1.getId()
                 );
     }
 
@@ -73,7 +110,7 @@ class SearchRepositoryTest {
         Cartoon toon6 = createToon(user, "용사의 모험3", "김영현이 모험을 떠난다");
 
         // when
-        List<Cartoon> findToons = searchRepository.searchCartoon(List.of("김영현"), PageRequest.of(0, 10));
+        List<Cartoon> findToons = searchRepository.findCartoon(List.of("김영현"), PageRequest.of(0, 10));
 
         // then
         assertThat(findToons.size()).isEqualTo(3);
@@ -96,7 +133,7 @@ class SearchRepositoryTest {
         Cartoon toon6 = createToon(user, "용사의 모험3", "김영현이 모험을 떠난다");
 
         // when
-        List<Cartoon> findToons = searchRepository.searchCartoon(List.of("김영현", "모험"), PageRequest.of(0, 10));
+        List<Cartoon> findToons = searchRepository.findCartoon(List.of("김영현", "모험"), PageRequest.of(0, 10));
 
         // then
         assertThat(findToons.size()).isEqualTo(2);
