@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface FollowRepository extends JpaRepository<Follow, Long> {
+public interface FollowRepository extends JpaRepository<Follow, Long>, CustomFollowRepository {
     @Query("select f from Follow f join fetch f.followee where f.follower.id = :followerId")
     List<Follow> findByFollowerId(long followerId, Pageable pageable);
 
@@ -19,6 +19,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     List<Long> findFollowerIdsByFolloweeId(long followeeId);
 
     Optional<Follow> findByFollowerIdAndFolloweeId(long followerId, long followeeId);
+
+    long countByFollowerId(long followerId);
+
+    long countByFolloweeId(long followeeId);
 
     void deleteByFollowerIdAndFolloweeId(long followerId, long followeeId);
 }

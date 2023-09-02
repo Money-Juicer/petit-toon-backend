@@ -13,19 +13,24 @@ public class UserDetailResponse {
     private String profileImagePath;
     private String statusMessage;
     private boolean isFollow;
+    private long followerCount;
+    private long followCount;
 
     @Builder
     private UserDetailResponse(long id, String nickname, String tag,
-                               String profileImagePath, String statusMessage, boolean isFollow) {
+                               String profileImagePath, String statusMessage, boolean isFollow,
+                               long followerCount, long followCount) {
         this.id = id;
         this.nickname = nickname;
         this.tag = tag;
         this.profileImagePath = profileImagePath;
         this.statusMessage = statusMessage;
         this.isFollow = isFollow;
+        this.followerCount = followerCount;
+        this.followCount = followCount;
     }
 
-    public static UserDetailResponse of(User user, boolean isFollow) {
+    public static UserDetailResponse of(User user, boolean isFollow, long followerCount, long followCount) {
         return UserDetailResponse.builder()
                 .id(user.getId())
                 .nickname(user.getNickname())
@@ -33,6 +38,8 @@ public class UserDetailResponse {
                 .profileImagePath(user.getProfileImage().getPath())
                 .statusMessage(user.getStatusMessage())
                 .isFollow(isFollow)
+                .followerCount(followerCount)
+                .followCount(followCount)
                 .build();
     }
 }

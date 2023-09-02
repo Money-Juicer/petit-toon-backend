@@ -71,6 +71,8 @@ class InquiryControllerTest extends RestDocsSupport {
                 .profileImagePath("sample-path")
                 .statusMessage("sample-message")
                 .isFollow(true)
+                .followerCount(20L)
+                .followCount(42L)
                 .build());
 
         // when // then
@@ -98,7 +100,11 @@ class InquiryControllerTest extends RestDocsSupport {
                                 fieldWithPath("statusMessage")
                                         .description("조회된 유저 상태메시지"),
                                 fieldWithPath("follow").type(JsonFieldType.BOOLEAN)
-                                        .description("팔로우 여부")
+                                        .description("팔로우 여부"),
+                                fieldWithPath("followerCount").type(JsonFieldType.NUMBER)
+                                        .description("나를 팔로우 하는 유저 수"),
+                                fieldWithPath("followCount").type(JsonFieldType.NUMBER)
+                                        .description("내가 팔로우 하는 유저 수")
                         )
                 ));
     }

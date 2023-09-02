@@ -46,6 +46,34 @@ class InquiryServiceTest {
         // when
         UserDetailResponse response1 = inquiryService.inquiryByUserId(loginUser.getId(), user1.getId());
         UserDetailResponse response2 = inquiryService.inquiryByUserId(loginUser.getId(), user2.getId());
+        UserDetailResponse response3 = inquiryService.inquiryByUserId(loginUser.getId(), loginUser.getId());
+
+        // then
+        assertThat(response1.getNickname()).isEqualTo("지훈");
+        assertThat(response1.getTag()).isEqualTo("@Hotoran");
+        assertThat(response1.isFollow()).isFalse();
+        assertThat(response2.getNickname()).isEqualTo("용우");
+        assertThat(response2.getTag()).isEqualTo("@timel2ss");
+        assertThat(response2.isFollow()).isTrue();
+        assertThat(response2.getFollowerCount()).isEqualTo(1L);
+        assertThat(response3.getNickname()).isEqualTo("민서");
+        assertThat(response3.getFollowCount()).isEqualTo(1L);
+        assertThat(response3.getFollowerCount()).isEqualTo(0L);
+    }
+
+    @Test
+    @DisplayName("유저 조회 서비스")
+    void inquiryByUserId2() {
+        // given
+        User loginUser = createUser("민서", "@Iced");
+        User user1 = createUser("지훈", "@Hotoran");
+        User user2 = createUser("용우", "@timel2ss");
+
+        createFollow(loginUser, user2);
+
+        // when
+        UserDetailResponse response1 = inquiryService.inquiryByUserId(loginUser.getId(), user1.getId());
+        UserDetailResponse response2 = inquiryService.inquiryByUserId(loginUser.getId(), user2.getId());
 
         // then
         assertThat(response1.getNickname()).isEqualTo("지훈");

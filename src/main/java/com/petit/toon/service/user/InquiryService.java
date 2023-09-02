@@ -27,8 +27,9 @@ public class InquiryService {
                 .orElseThrow(UserNotFoundException::new);
 
         boolean isFollow = followRepository.findByFollowerIdAndFolloweeId(user.getId(), inquiryUser.getId()).isPresent();
-
-        return UserDetailResponse.of(inquiryUser, isFollow);
+        long followerCount = followRepository.countByFolloweeId(inquiryUserId); // 나를 팔로우 하는 유저 수
+        long followCount = followRepository.countByFollowerId(inquiryUserId); // 내가 팔로우 하는 유저 수
+        return UserDetailResponse.of(inquiryUser, isFollow, followerCount, followCount);
     }
 
     public TagExistResponse checkTagExist(String tag) {
