@@ -10,14 +10,16 @@ import java.util.concurrent.Executor;
 @Configuration
 @EnableAsync
 public class AsyncConfig {
-    private final int CORE_POOL_SIZE = 3;
+    private final int CORE_POOL_SIZE = 10;
     private final int MAX_POOL_SIZE = 20;
+    private final String THREAD_NAME_PREFIX = "TOON-THREAD-";
 
-    @Bean(name = "threadPoolTaskExecutor")
-    public Executor threadPoolTaskExecutor() {
+    @Bean(name = "feedUpdateExecutor")
+    public Executor feedUpdateExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(CORE_POOL_SIZE);
         taskExecutor.setMaxPoolSize(MAX_POOL_SIZE);
+        taskExecutor.setThreadNamePrefix(THREAD_NAME_PREFIX);
         taskExecutor.initialize();
         return taskExecutor;
     }
