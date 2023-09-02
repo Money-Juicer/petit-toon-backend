@@ -2,8 +2,10 @@ package com.petit.toon.repository.cartoon;
 
 import com.petit.toon.config.QueryDslConfig;
 import com.petit.toon.entity.cartoon.Cartoon;
+import com.petit.toon.entity.user.Follow;
 import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.repository.user.FollowRepository;
 import com.petit.toon.repository.user.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,9 @@ public class CartoonRepositoryTest {
 
     @Autowired
     CartoonRepository cartoonRepository;
+
+    @Autowired
+    FollowRepository followRepository;
 
     @Test
     void findCartoonById() {
@@ -78,6 +83,42 @@ public class CartoonRepositoryTest {
                         tuple(cartoon3.getId(), cartoon3.getTitle()));
     }
 
+    @Test
+    @DisplayName("팔로우 한 인플루언서의 작품을 조회한다")
+    void findAllWithFollower() {
+        // given
+        User user = createUser("Hotoran");
+        User author1 = createInfluencer("influencer1");
+        User author2 = createInfluencer("influencer2");
+        User author3 = createInfluencer("influencer3");
+        User author4 = createInfluencer("influencer4");
+        User author5 = createUser("author5");
+
+        createFollow(user, author1);
+        createFollow(user, author2);
+        createFollow(user, author3);
+        createFollow(user, author4);
+        createFollow(user, author5);
+
+        Cartoon cartoon1 = createCartoon(author1, "title1");
+        Cartoon cartoon2 = createCartoon(author1, "title2");
+        Cartoon cartoon3 = createCartoon(author2, "title3");
+        Cartoon cartoon4 = createCartoon(author3, "title4");
+        Cartoon cartoon5 = createCartoon(author3, "title5");
+        Cartoon cartoon6 = createCartoon(author3, "title6");
+        Cartoon cartoon7 = createCartoon(author4, "title7");
+        Cartoon cartoon8 = createCartoon(author4, "title8");
+        Cartoon cartoon9 = createCartoon(author5, "title9");
+        Cartoon cartoon10 = createCartoon(author5, "title10");
+
+        // when
+        List<Cartoon> followCartoons = cartoonRepository.findAllWithFollower(user.getId());
+
+        // then
+        assertThat(followCartoons.size()).isEqualTo(8);
+        assertThat(followCartoons).doesNotContain(cartoon9, cartoon10);
+    }
+
     private User createUser(String nickname) {
         return userRepository.save(
                 User.builder()
@@ -85,11 +126,27 @@ public class CartoonRepositoryTest {
                         .build());
     }
 
+    private User createInfluencer(String nickname) {
+        User user = User.builder()
+                .nickname(nickname)
+                .build();
+        user.updateInfluenceStatus(true);
+        return userRepository.save(user);
+    }
+
     private Cartoon createCartoon(User user, String title) {
         return cartoonRepository.save(
                 Cartoon.builder()
                         .user(user)
                         .title(title)
+                        .build());
+    }
+
+    private Follow createFollow(User follower, User followee) {
+        return followRepository.save(
+                Follow.builder()
+                        .follower(follower)
+                        .followee(followee)
                         .build());
     }
 }

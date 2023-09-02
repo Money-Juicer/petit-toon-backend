@@ -71,7 +71,10 @@ public class CartoonService {
         cartoon.setThumbnailPath(thumbnailPath);
         cartoonRepository.save(cartoon);
 
-        publisher.publishEvent(new CartoonUploadedEvent(userId, cartoon.getId()));
+        if (!user.isInfluencer()) {
+            publisher.publishEvent(new CartoonUploadedEvent(userId, cartoon.getId()));
+        }
+
         return new CartoonUploadResponse(cartoon.getId());
     }
 

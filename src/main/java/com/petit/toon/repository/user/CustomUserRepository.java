@@ -7,4 +7,8 @@ import java.util.List;
 public interface CustomUserRepository {
 
     List<User> findAllWithProfileImageWithExactOrder(List<Long> ids);
+
+    long updateInfluenceStatus(boolean status);
+
+    void bulkInsert(List<User> user);
 }

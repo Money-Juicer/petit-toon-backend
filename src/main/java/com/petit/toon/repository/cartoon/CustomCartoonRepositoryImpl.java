@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.petit.toon.entity.cartoon.QCartoon.cartoon;
+import static com.petit.toon.entity.user.QFollow.follow;
 import static com.petit.toon.entity.user.QUser.user;
 
 @Repository
@@ -25,6 +26,16 @@ public class CustomCartoonRepositoryImpl implements CustomCartoonRepository {
                 .join(user).on(cartoon.user.eq(user)).fetchJoin()
                 .where(cartoon.id.in(ids))
                 .orderBy(orderByIdsExactOrder(ids).asc())
+                .fetch();
+    }
+
+    @Override
+    public List<Cartoon> findAllWithFollower(Long userId) {
+        return queryFactory.select(cartoon)
+                .from(cartoon)
+                .join(follow).on(follow.followee.eq(cartoon.user))
+                .join(user).on(follow.follower.eq(user))
+                .where(cartoon.user.isInfluencer.and(user.id.eq(userId)))
                 .fetch();
     }
 

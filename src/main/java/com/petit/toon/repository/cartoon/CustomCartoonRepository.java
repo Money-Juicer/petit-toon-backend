@@ -7,4 +7,6 @@ import java.util.List;
 public interface CustomCartoonRepository {
 
     List<Cartoon> findAllWithUserWithExactOrder(List<Long> ids);
+
+    List<Cartoon> findAllWithFollower(Long userId);
 }

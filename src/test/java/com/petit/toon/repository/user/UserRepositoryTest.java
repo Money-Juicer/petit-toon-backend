@@ -2,8 +2,10 @@ package com.petit.toon.repository.user;
 
 import com.petit.toon.DefaultProfileImageSetup;
 import com.petit.toon.config.QueryDslConfig;
+import com.petit.toon.entity.user.Follow;
 import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.petit.toon.service.user.ProfileImageService.DEFAULT_PROFILE_IMAGE_ID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +28,13 @@ import static org.assertj.core.api.Assertions.tuple;
 class UserRepositoryTest {
 
     @Autowired
+    EntityManager em;
+
+    @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    FollowRepository followRepository;
 
     @Autowired
     ProfileImageRepository profileImageRepository;
@@ -89,6 +99,45 @@ class UserRepositoryTest {
                 );
     }
 
+    @Test
+    @DisplayName("팔로워 수가 10,000명 이상이면 influencer가 된다")
+    void updateInfluenceStatus() {
+        // given
+        User user = createUser("Hotoran");
+        createUsers(10_000);
+        createFollows(user);
+
+        // when
+        long updatedCount = userRepository.updateInfluenceStatus(true);
+        em.clear();
+
+        // then
+        User findUser = userRepository.findById(user.getId()).get();
+        assertThat(updatedCount).isEqualTo(1L);
+        assertThat(findUser.isInfluencer()).isTrue();
+    }
+
+    @Test
+    @DisplayName("팔로워 수가 10,000명 이하면 influencer가 아니다")
+    void updateInfluenceStatus2() {
+        // given
+        User user = createUser("Hotoran");
+        user.updateInfluenceStatus(true);
+        userRepository.save(user);
+
+        User follower = createUser("follower");
+        createFollow(follower, user);
+
+        // when
+        long updatedCount = userRepository.updateInfluenceStatus(false);
+        em.clear();
+
+        // then
+        User findUser = userRepository.findById(user.getId()).get();
+        assertThat(updatedCount).isEqualTo(1L);
+        assertThat(findUser.isInfluencer()).isFalse();
+    }
+
     private User createUser(String nickname) {
         return userRepository.save(User.builder()
                 .nickname(nickname)
@@ -102,5 +151,35 @@ class UserRepositoryTest {
         ProfileImage profileImage = profileImageRepository.findById(profileImageId).get();
         user.setProfileImage(profileImage);
         return userRepository.save(user);
+    }
+
+    private Follow createFollow(User follower, User followee) {
+        return followRepository.save(
+                Follow.builder()
+                        .follower(follower)
+                        .followee(followee)
+                        .build());
+    }
+
+    private void createUsers(int number) {
+        userRepository.bulkInsert(
+                IntStream.range(1, number + 1)
+                        .mapToObj(i -> User.builder()
+                                .nickname("follower" + i)
+                                .build())
+                        .collect(Collectors.toList()));
+    }
+
+    private void createFollows(User followee) {
+        List<User> followers = userRepository.findAll().stream()
+                .filter(user -> !user.equals(followee))
+                .collect(Collectors.toList());
+
+        followRepository.bulkInsert(followers.stream()
+                .map(follower -> Follow.builder()
+                        .follower(follower)
+                        .followee(followee)
+                        .build())
+                .collect(Collectors.toList()));
     }
 }
