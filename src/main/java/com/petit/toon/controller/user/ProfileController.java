@@ -1,15 +1,15 @@
 package com.petit.toon.controller.user;
 
+import com.petit.toon.controller.user.request.UserUpdateRequest;
 import com.petit.toon.service.user.ProfileImageService;
+import com.petit.toon.service.user.UserService;
 import com.petit.toon.service.user.response.ProfileImageResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,6 +18,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ProfileController {
 
+    private final UserService userService;
     private final ProfileImageService profileImageService;
 
     @PostMapping("/api/v1/user/image/upload")
@@ -33,5 +34,10 @@ public class ProfileController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-
+    @PatchMapping("/api/v1/user")
+    public ResponseEntity<Void> updateUserInfo(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                               @Valid @RequestBody UserUpdateRequest request) {
+        userService.updateUserProfile(request.toServiceRequest(userId));
+        return ResponseEntity.noContent().build();
+    }
 }

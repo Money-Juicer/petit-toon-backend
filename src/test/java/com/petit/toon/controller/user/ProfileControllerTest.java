@@ -1,9 +1,12 @@
 package com.petit.toon.controller.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petit.toon.controller.RestDocsSupport;
+import com.petit.toon.controller.user.request.UserUpdateRequest;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.user.ProfileImageService;
+import com.petit.toon.service.user.UserService;
 import com.petit.toon.service.user.response.ProfileImageResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +17,9 @@ import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -29,8 +35,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,8 +50,14 @@ class ProfileControllerTest extends RestDocsSupport {
     @MockBean
     ProfileImageService profileImageService;
 
+    @MockBean
+    UserService userService;
+
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     String absolutePath;
 
@@ -99,5 +110,54 @@ class ProfileControllerTest extends RestDocsSupport {
                 .andExpect(status().isNoContent())
                 .andDo(MockMvcResultHandlers.print())
                 .andDo(document("profile-image-default"));
+    }
+
+    @Test
+    @DisplayName("유저 프로필 정보 변경 API")
+    void profileUpdate() throws Exception {
+        // given
+        UserUpdateRequest request = UserUpdateRequest.builder()
+                .nickname("김영현")
+                .tag("Kingggg")
+                .password("q1w2e3r4!")
+                .statusMessage("")
+                .build();
+
+        // when // then
+        mockMvc.perform(patch("/api/v1/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isNoContent())
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document("profile-update",
+                        requestFields(
+                                fieldWithPath("nickname").type(JsonFieldType.STRING)
+                                        .description("변경할 닉네임 (20자 이내)"),
+                                fieldWithPath("tag").type(JsonFieldType.STRING)
+                                        .description("변경할 태그 (15자 이내, 영문, 특수문자(_.) 허용)"),
+                                fieldWithPath("password").type(JsonFieldType.STRING)
+                                        .description("변경할 비밀번호 (8자 이상, 20자 이내, 영어 소문자/숫자/특수문자(!@#$%^&*~?) 1개 이상 포함)"),
+                                fieldWithPath("statusMessage").type(JsonFieldType.STRING)
+                                        .description("변경할 상태 메시지 (500자 이내)")
+                        )));
+    }
+
+    @Test
+    @DisplayName("유저 프로필 정보 변경 API - null 필드 허용")
+    void profileUpdate2() throws Exception {
+        // given
+        UserUpdateRequest request = UserUpdateRequest.builder()
+                .tag("Kingggg")
+                .statusMessage("statusMessage")
+                .build();
+
+        // when // then
+        mockMvc.perform(patch("/api/v1/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsBytes(request)))
+                .andExpect(status().isNoContent())
+                .andDo(MockMvcResultHandlers.print());
     }
 }

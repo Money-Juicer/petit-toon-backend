@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -36,6 +37,8 @@ public class User {
     private ProfileImage profileImage;
 
     private String statusMessage;
+
+    private boolean isInfluencer;
 
     @ManyToMany
     @JoinTable(
@@ -67,5 +70,24 @@ public class User {
 
     public void assignAuthority(Authority authority) {
         authorities.add(authority);
+    }
+
+    public void updateInfluenceStatus(boolean status) {
+        this.isInfluencer = status;
+    }
+
+    public void updateProfile(User user) {
+        if (StringUtils.hasText(user.nickname)) {
+            this.nickname = user.nickname;
+        }
+        if (StringUtils.hasText(user.tag)) {
+            this.tag = user.tag;
+        }
+        if (StringUtils.hasText(user.password)) {
+            this.password = user.password;
+        }
+        if (StringUtils.hasText(user.statusMessage)) {
+            this.statusMessage = user.statusMessage;
+        }
     }
 }
