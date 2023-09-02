@@ -113,7 +113,6 @@ public class RedisUtil {
 
         // Redis List Size Limit
         listOperations.trim(key, 0, limit - 1);
-//        return listOperations.size(key);
     }
 
     public void pushElementWithLimit(String key, long element, long limit) {
@@ -133,15 +132,6 @@ public class RedisUtil {
                 return redisOperations.exec();
             }
         });
-//        ListOperations<String, String> listOperations = redisTemplate.opsForList();
-//
-//
-//        listOperations.getOperations().watch(key);
-//        listOperations.getOperations().multi();
-//        if (listOperations.size(key) == limit) {
-//            listOperations.rightPop(key);
-//        }
-//        listOperations.leftPush(key, value);
     }
 
 
