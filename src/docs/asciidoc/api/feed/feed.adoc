@@ -1,0 +1,12 @@
+[[feed]]
+=== Feed
+
+==== HTTP Request
+
+include::{snippets}/feed/http-request.adoc[]
+include::{snippets}/feed/query-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/feed/http-response.adoc[]
+include::{snippets}/feed/response-fields.adoc[]
