@@ -60,3 +60,16 @@ include::{snippets}/toon-view/path-parameters.adoc[]
 ==== HTTP Response
 
 include::{snippets}/toon-view/http-response.adoc[]
+
+[[toon-update]]
+=== 웹툰 정보 변경
+
+==== HTTP Request
+
+include::{snippets}/toon-update/http-request.adoc[]
+include::{snippets}/toon-update/path-parameters.adoc[]
+include::{snippets}/toon-update/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-update/http-response.adoc[]

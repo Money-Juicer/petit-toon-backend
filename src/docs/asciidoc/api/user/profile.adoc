@@ -20,3 +20,15 @@ include::{snippets}/profile-image-default/http-request.adoc[]
 ==== HTTP Response
 
 include::{snippets}/profile-image-default/http-response.adoc[]
+
+[[profile-update]]
+=== 유저 프로필 정보 변경
+
+==== HTTP Request
+
+include::{snippets}/profile-update/http-request.adoc[]
+include::{snippets}/profile-update/request-fields.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/profile-update/http-response.adoc[]
