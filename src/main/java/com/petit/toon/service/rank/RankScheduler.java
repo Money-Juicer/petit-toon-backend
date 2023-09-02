@@ -21,7 +21,7 @@ public class RankScheduler {
     private final RankRepository rankRepository;
     private final RedisUtil redisUtil;
 
-    @Scheduled(cron = "0 0 0/1 * * *") // 1시간마다 실행
+    @Scheduled(cron = "0 0 */1 * * *") // 1시간마다 실행
     public void updateRank() {
         update(USER_RANK_KEY);
         update(CARTOON_RANK_KEY);
