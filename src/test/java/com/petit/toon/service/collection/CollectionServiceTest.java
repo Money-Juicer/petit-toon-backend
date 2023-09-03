@@ -107,23 +107,9 @@ class CollectionServiceTest {
         // given
         User user1 = createUser("용우");
         User user2 = createUser("승환");
-        Collection collection1 = collectionRepository.save(Collection.builder()
-                .user(user1)
-                .title("용우의컬렉션")
-                .closed(false)
-                .build());
-
-        Collection collection2 = collectionRepository.save(Collection.builder()
-                .user(user1)
-                .title("용우의김영한컬렉션")
-                .closed(false)
-                .build());
-
-        Collection collection3 = collectionRepository.save(Collection.builder()
-                .user(user1)
-                .title("용우의은밀한컬렉션")
-                .closed(true)
-                .build());
+        Collection collection1 = createCollection(user1, "용우의컬렉션", false);
+        Collection collection2 = createCollection(user1, "용우의김영한컬렉션", false);
+        Collection collection3 = createCollection(user1, "용우의은밀한컬렉션", true);
 
         PageRequest pageRequest = PageRequest.of(0, 30);
 
@@ -307,6 +293,14 @@ class CollectionServiceTest {
         return bookmarkRepository.save(Bookmark.builder()
                 .collection(collection)
                 .cartoon(cartoon)
+                .build());
+    }
+
+    private Collection createCollection(User user, String title, boolean closed) {
+        return collectionRepository.save(Collection.builder()
+                .user(user)
+                .title(title)
+                .closed(closed)
                 .build());
     }
 }

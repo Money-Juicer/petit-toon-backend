@@ -26,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -166,9 +167,19 @@ class CollectionControllerTest extends RestDocsSupport {
     @Test
     void listCollection() throws Exception {
         // given
-        CollectionInfoResponse res1 = createCollectionInfo(1l, "title1", false);
-        CollectionInfoResponse res2 = createCollectionInfo(2l, "title2", false);
-        CollectionInfoResponse res3 = createCollectionInfo(3l, "title3", true);
+        BookmarkInfoResponse bookmark1 = createBookmarkInfo(1l, 2l, "cartoon-title-1", "cartoon/thumbnail-path/1");
+        BookmarkInfoResponse bookmark2 = createBookmarkInfo(2l, 4l, "cartoon-title-2", "cartoon/thumbnail-path/2");
+        BookmarkInfoResponse bookmark3 = createBookmarkInfo(3l, 7l, "cartoon-title-3", "cartoon/thumbnail-path/3");
+        BookmarkInfoResponse bookmark4 = createBookmarkInfo(4l, 10l, "cartoon-title-4", "cartoon/thumbnail-path/4");
+
+        List<BookmarkInfoResponse> bookmarkInfos1 = new ArrayList<>();
+        List<BookmarkInfoResponse> bookmarkInfos2 = List.of(bookmark1, bookmark2);
+        List<BookmarkInfoResponse> bookmarkInfos3 = List.of(bookmark1, bookmark2, bookmark3, bookmark4);
+
+        CollectionInfoResponse res1 = createCollectionInfo(1l, "title1", false, bookmarkInfos1);
+        CollectionInfoResponse res2 = createCollectionInfo(2l, "title2", false, bookmarkInfos2);
+        CollectionInfoResponse res3 = createCollectionInfo(3l, "title3", true, bookmarkInfos3);
+
         given(collectionService.viewCollectionList(anyLong(), anyBoolean(), any()))
                 .willReturn(new CollectionInfoListResponse(List.of(res1, res2, res3)));
 
@@ -194,7 +205,18 @@ class CollectionControllerTest extends RestDocsSupport {
                                 fieldWithPath("collectionInfos[].title").type(JsonFieldType.STRING)
                                         .description("Collection 제목"),
                                 fieldWithPath("collectionInfos[].closed").type(JsonFieldType.BOOLEAN)
-                                        .description("Collection 비공개 여부 (true: 비공개 | false: 공개)")
+                                        .description("Collection 비공개 여부 (true: 비공개 | false: 공개)"),
+
+                                fieldWithPath("collectionInfos[].bookmarkInfos").type(JsonFieldType.ARRAY)
+                                        .description("Collection의 대표 북마크 4개"),
+                                fieldWithPath("collectionInfos[].bookmarkInfos[].bookmarkId").type(JsonFieldType.NUMBER)
+                                        .description("Collection의 북마크 ID"),
+                                fieldWithPath("collectionInfos[].bookmarkInfos[].cartoonId").type(JsonFieldType.NUMBER)
+                                        .description("Collection의 북마크에 등록된 웹툰 ID"),
+                                fieldWithPath("collectionInfos[].bookmarkInfos[].cartoonTitle").type(JsonFieldType.STRING)
+                                        .description("Collection의 북마크에 등록된 웹툰 제목"),
+                                fieldWithPath("collectionInfos[].bookmarkInfos[].thumbnailPath").type(JsonFieldType.STRING)
+                                        .description("Collection의 북마크에 등록된 웹툰 썸네일 경로")
                         )
                 ));
     }
@@ -261,11 +283,12 @@ class CollectionControllerTest extends RestDocsSupport {
                         )));
     }
 
-    private CollectionInfoResponse createCollectionInfo(long id, String title, boolean closed) {
+    private CollectionInfoResponse createCollectionInfo(long id, String title, boolean closed, List<BookmarkInfoResponse> bookmarkInfos) {
         return CollectionInfoResponse.builder()
                 .id(id)
                 .title(title)
                 .closed(closed)
+                .bookmarkInfos(bookmarkInfos)
                 .build();
     }
 
