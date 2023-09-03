@@ -12,14 +12,14 @@ public class CollectionInfoResponse {
     private long id;
     private String title;
     private boolean closed;
-    private List<BookmarkInfoResponse> bookmarkInfos;
+    private List<String> thumbnailPaths;
 
     @Builder
-    private CollectionInfoResponse(long id, String title, boolean closed, List<BookmarkInfoResponse> bookmarkInfos) {
+    private CollectionInfoResponse(long id, String title, boolean closed, List<String> thumbnailPaths) {
         this.id = id;
         this.title = title;
         this.closed = closed;
-        this.bookmarkInfos = bookmarkInfos;
+        this.thumbnailPaths = thumbnailPaths;
     }
 
     public static CollectionInfoResponse of(Collection collection) {
@@ -27,9 +27,9 @@ public class CollectionInfoResponse {
                 .id(collection.getId())
                 .title(collection.getTitle())
                 .closed(collection.isClosed())
-                .bookmarkInfos(collection.getBookmarks()
+                .thumbnailPaths(collection.getBookmarks()
                         .subList(0, Math.min(3, collection.getBookmarks().size()))
-                        .stream().map(BookmarkInfoResponse::of)
+                        .stream().map(bookmark -> bookmark.getCartoon().getThumbnailPath())
                         .toList())
                 .build();
     }
