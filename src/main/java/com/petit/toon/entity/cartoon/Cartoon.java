@@ -1,6 +1,7 @@
 package com.petit.toon.entity.cartoon;
 
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.badrequest.ImageLimitExceededException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -78,5 +79,12 @@ public class Cartoon {
         if (StringUtils.hasText(cartoon.description)) {
             this.description = cartoon.description;
         }
+    }
+
+    public void insertImage(Image image, int index) {
+        if (images.size() >= 10) {
+            throw new ImageLimitExceededException();
+        }
+        images.add(index, image);
     }
 }

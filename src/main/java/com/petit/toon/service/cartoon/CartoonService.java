@@ -5,6 +5,7 @@ import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.entity.cartoon.LikeStatus;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.exception.badrequest.AuthorityNotMatchException;
+import com.petit.toon.exception.badrequest.ImageLimitExceededException;
 import com.petit.toon.exception.notfound.CartoonNotFoundException;
 import com.petit.toon.exception.notfound.UserNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
@@ -12,10 +13,7 @@ import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.event.CartoonUploadedEvent;
 import com.petit.toon.service.cartoon.request.CartoonUpdateServiceRequest;
 import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
-import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
-import com.petit.toon.service.cartoon.response.CartoonListResponse;
-import com.petit.toon.service.cartoon.response.CartoonResponse;
-import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
+import com.petit.toon.service.cartoon.response.*;
 import com.petit.toon.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CartoonService {
     public static final String VIEW_KEY_PREFIX = "view:toon:";
+    public static final int MAX_NUMBER_OF_IMAGES = 10;
 
 
     private final ApplicationEventPublisher publisher;
@@ -96,6 +95,29 @@ public class CartoonService {
         return new CartoonListResponse(cartoonList);
     }
 
+    public ImageInsertResponse insertImage(long userId, long toonId, int index, MultipartFile multipartFile) {
+        Cartoon cartoon = cartoonRepository.findById(toonId)
+                .orElseThrow(CartoonNotFoundException::new);
+
+        if (cartoon.getUser().getId() != userId) {
+            throw new AuthorityNotMatchException();
+        }
+
+        if (cartoon.getImages().size() >= MAX_NUMBER_OF_IMAGES) {
+            throw new ImageLimitExceededException();
+        }
+
+        int imageNumber = imageService.getLastImageNumber(cartoon);
+        try {
+            Image image = imageService.storeImage(multipartFile, cartoon, imageNumber + 1, toonDirectory);
+            cartoon.insertImage(image, index);
+            return new ImageInsertResponse(image.getPath());
+        } catch (Exception e) {
+            imageService.deleteFile(imageService.getPath(multipartFile, cartoon.getId(), imageNumber));
+            throw new RuntimeException(e);
+        }
+    }
+
     public void increaseViewCount(long userId, long toonId) {
         String key = VIEW_KEY_PREFIX + toonId;
         if (redisUtil.hasKey(key) && redisUtil.getBit(key, userId)) {
@@ -130,6 +152,17 @@ public class CartoonService {
             throw new AuthorityNotMatchException();
         }
         cartoonRepository.deleteById(toonId);
+    }
+
+    public void removeImage(long userId, long toonId, int index) {
+        Cartoon cartoon = cartoonRepository.findById(toonId)
+                .orElseThrow(CartoonNotFoundException::new);
+
+        if (cartoon.getUser().getId() != userId) {
+            throw new AuthorityNotMatchException();
+        }
+
+        cartoon.getImages().remove(index);
     }
 
     public void setToonDirectory(String path) {

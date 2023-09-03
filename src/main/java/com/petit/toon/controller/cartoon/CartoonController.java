@@ -6,6 +6,7 @@ import com.petit.toon.service.cartoon.CartoonService;
 import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
 import com.petit.toon.service.cartoon.response.CartoonListResponse;
 import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
+import com.petit.toon.service.cartoon.response.ImageInsertResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -59,10 +61,28 @@ public class CartoonController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/api/v1/toon/{toonId}/image/{index}")
+    public ResponseEntity<ImageInsertResponse> insertImage(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                                           @PathVariable("toonId") long toonId,
+                                                           @PathVariable("index") int index,
+                                                           @RequestPart MultipartFile image) {
+        ImageInsertResponse response = cartoonService.insertImage(userId, toonId, index, image);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(response);
+    }
+
     @DeleteMapping("/api/v1/toon/{toonId}")
     public ResponseEntity<Void> deleteToon(@AuthenticationPrincipal(expression = "user.id") long userId,
                                            @PathVariable("toonId") long toonId) {
         cartoonService.delete(userId, toonId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @DeleteMapping("/api/v1/toon/{toonId}/image/{index}")
+    public ResponseEntity<Void> removeImage(@AuthenticationPrincipal(expression = "user.id") long userId,
+                                            @PathVariable("toonId") long toonId,
+                                            @PathVariable("index") int index) {
+        cartoonService.removeImage(userId, toonId, index);
+        return ResponseEntity.noContent().build();
     }
 }
