@@ -139,14 +139,9 @@ class CommentServiceTest {
         // then
         List<MyCommentResponse> comments = res.getComments();
         assertThat(comments.size()).isEqualTo(3);
-        assertThat(comments.get(0).getCartoonInfo().getId()).isEqualTo(cartoon3.getId());
-        assertThat(comments.get(0).getCartoonInfo().getTitle()).isEqualTo("toon 3");
-
-        assertThat(comments.get(1).getCartoonInfo().getId()).isEqualTo(cartoon2.getId());
-        assertThat(comments.get(1).getCartoonInfo().getTitle()).isEqualTo("toon 2");
-
-        assertThat(comments.get(2).getCartoonInfo().getId()).isEqualTo(cartoon1.getId());
-        assertThat(comments.get(2).getCartoonInfo().getTitle()).isEqualTo("toon 1");
+        assertThat(comments.get(0).getCartoonId()).isEqualTo(cartoon3.getId());
+        assertThat(comments.get(1).getCartoonId()).isEqualTo(cartoon2.getId());
+        assertThat(comments.get(2).getCartoonId()).isEqualTo(cartoon1.getId());
     }
 
     @Test

@@ -161,15 +161,10 @@ class CommentControllerTest extends RestDocsSupport {
     @DisplayName("자신이 단 댓글 조회")
     void listUserComments() throws Exception {
         // given
-        CartoonResponse cartoon1 = createCartoonResponse(12L, "김영현의 모험1", "김영현", "thumbnail/path/1");
-        CartoonResponse cartoon2 = createCartoonResponse(14L, "이세계 용사 김영현", "SPR", "thumbnail/path/2");
-        CartoonResponse cartoon3 = createCartoonResponse(25L, "태어나보니 김영현", "Inkojava", "thumbnail/path/3");
-        CartoonResponse cartoon4 = createCartoonResponse(43L, "김영현의 모험2", "김영현", "thumbnail/path/4");
-
-        MyCommentResponse res1 = createMyResponse(1l, cartoon1, "sample 1");
-        MyCommentResponse res2 = createMyResponse(2l, cartoon2, "sample 2");
-        MyCommentResponse res3 = createMyResponse(3l, cartoon3, "sample 3");
-        MyCommentResponse res4 = createMyResponse(4l, cartoon4, "sample 4");
+        MyCommentResponse res1 = createMyResponse(1l, 12L, "김영현의 모험1", "김영현", "thumbnail/path/1");
+        MyCommentResponse res2 = createMyResponse(2l, 14L, "이세계 용사 김영현", "SPR", "thumbnail/path/2");
+        MyCommentResponse res3 = createMyResponse(3l, 25L, "태어나보니 김영현", "Inkojava", "thumbnail/path/3");
+        MyCommentResponse res4 = createMyResponse(4l, 43L, "김영현의 모험2", "김영현", "thumbnail/path/4");
 
         given(commentService.viewOnlyMyComments(anyLong(), any()))
                 .willReturn(new MyCommentListResponse(List.of(res1, res2, res3, res4)));
@@ -190,15 +185,11 @@ class CommentControllerTest extends RestDocsSupport {
                                 fieldWithPath("comments[].commentId").type(JsonFieldType.NUMBER)
                                         .description("댓글 ID"),
 
-                                fieldWithPath("comments[].cartoonInfo").type(JsonFieldType.OBJECT)
-                                        .description("댓글 단 웹툰 정보"),
-                                fieldWithPath("comments[].cartoonInfo.id").type(JsonFieldType.NUMBER)
+                                fieldWithPath("comments[].cartoonId").type(JsonFieldType.NUMBER)
                                         .description("댓글 단 웹툰 ID"),
-                                fieldWithPath("comments[].cartoonInfo.title").type(JsonFieldType.STRING)
+                                fieldWithPath("comments[].cartoonTitle").type(JsonFieldType.STRING)
                                         .description("댓글 단 웹툰 제목"),
-                                fieldWithPath("comments[].cartoonInfo.author").type(JsonFieldType.STRING)
-                                        .description("댓글 단 웹툰 작가 닉네임"),
-                                fieldWithPath("comments[].cartoonInfo.thumbnailUrl").type(JsonFieldType.STRING)
+                                fieldWithPath("comments[].cartoonThumbnailUrl").type(JsonFieldType.STRING)
                                         .description("댓글 단 웹툰 썸네일 URL"),
 
                                 fieldWithPath("comments[].content").type(JsonFieldType.STRING)
@@ -246,11 +237,13 @@ class CommentControllerTest extends RestDocsSupport {
                 .build();
     }
 
-    private MyCommentResponse createMyResponse(long commentId, CartoonResponse cartoonResponse, String content) {
+    private MyCommentResponse createMyResponse(long commentId, long cartoonId, String title, String path, String content) {
         LocalDateTime sample = LocalDateTime.now();
         return MyCommentResponse.builder()
                 .commentId(commentId)
-                .cartoonInfo(cartoonResponse)
+                .cartoonId(cartoonId)
+                .cartoonTitle(title)
+                .cartoonThumbnailUrl(path)
                 .content(content)
                 .createdDateTime(sample)
                 .modifiedDateTime(sample)
