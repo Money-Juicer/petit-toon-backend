@@ -72,11 +72,13 @@ class SearchServiceTest {
     }
 
     private Cartoon createToon(User user, String title, String description) {
-        return cartoonRepository.save(Cartoon.builder()
+        Cartoon cartoon = cartoonRepository.save(Cartoon.builder()
                 .user(user)
                 .title(title)
                 .description(description)
                 .build());
+        cartoonRepository.flush();
+        return cartoon;
     }
 
     private User createUser(String name, String nickname) {

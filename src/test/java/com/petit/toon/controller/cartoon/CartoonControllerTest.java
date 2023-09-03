@@ -5,9 +5,11 @@ import com.petit.toon.controller.RestDocsSupport;
 import com.petit.toon.controller.cartoon.request.CartoonUpdateRequest;
 import com.petit.toon.controller.cartoon.request.CartoonUploadRequest;
 import com.petit.toon.entity.user.User;
+import com.petit.toon.exception.badrequest.ImageLimitExceededException;
 import com.petit.toon.repository.user.UserRepository;
 import com.petit.toon.service.cartoon.CartoonService;
 import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
+import com.petit.toon.service.cartoon.response.ImageInsertResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +33,7 @@ import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -40,6 +41,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -143,6 +145,74 @@ public class CartoonControllerTest extends RestDocsSupport {
                         ),
                         pathParameters(
                                 parameterWithName("toonId").description("웹툰 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("이미지 삽입 API")
+    void insertImage() throws Exception {
+        // given
+        given(cartoonService.insertImage(anyLong(), anyLong(), anyInt(), any()))
+                .willReturn(new ImageInsertResponse("toons/1/1-12.png"));
+
+        MockMultipartFile file = new MockMultipartFile("image", "sample1.png", "multipart/form-data",
+                new FileInputStream(absolutePath + "/sample1.png"));
+
+        // when // then
+        mockMvc.perform(multipart("/api/v1/toon/{toonId}/image/{index}", 1L, 3)
+                        .file(file))
+                .andExpect(status().isCreated())
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document("toon-insertImage",
+//                        pathParameters(
+//                                parameterWithName("toonId").description("웹툰 ID"),
+//                                parameterWithName("index").description("삽입 위치 +\n (0부터 시작)")
+//                        ),
+                        responseFields(
+                                fieldWithPath("path").type(JsonFieldType.STRING)
+                                        .description("새로 삽입된 이미지 경로")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("이미지 삽입 API - ImageLimitExceeded")
+    void insertImage2() throws Exception {
+        // given
+        given(cartoonService.insertImage(anyLong(), anyLong(), anyInt(), any()))
+                .willThrow(new ImageLimitExceededException());
+
+        MockMultipartFile file = new MockMultipartFile("image", "sample1.png", "multipart/form-data",
+                new FileInputStream(absolutePath + "/sample1.png"));
+
+        // when // then
+        mockMvc.perform(multipart("/api/v1/toon/{toonId}/image/{index}", 1L, 3)
+                        .file(file))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value(ImageLimitExceededException.MESSAGE))
+                .andDo(print())
+                .andDo(document("exception-image-limit-exceeded",
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.STRING)
+                                        .description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING)
+                                        .description("예외 메시지")
+                        )));
+    }
+
+    @Test
+    @DisplayName("이미지 삭제 API")
+    void removeImage() throws Exception {
+        // when // then
+        mockMvc.perform(delete("/api/v1/toon/{toonId}/image/{index}", 1L, 3))
+                .andExpect(status().isNoContent())
+                .andDo(MockMvcResultHandlers.print())
+                .andDo(document("toon-removeImage",
+                        pathParameters(
+                                parameterWithName("toonId").description("웹툰 ID"),
+                                parameterWithName("index").description("삭제 위치 +\n (0부터 시작)")
                         )
                 ));
     }

@@ -1,10 +1,12 @@
 package com.petit.toon.service.cartoon;
 
 import com.petit.toon.entity.cartoon.Cartoon;
+import com.petit.toon.entity.cartoon.Image;
 import com.petit.toon.entity.cartoon.LikeStatus;
 import com.petit.toon.entity.user.ProfileImage;
 import com.petit.toon.entity.user.User;
 import com.petit.toon.exception.badrequest.AuthorityNotMatchException;
+import com.petit.toon.exception.badrequest.ImageLimitExceededException;
 import com.petit.toon.exception.internalservererror.DefaultProfileImageNotExistException;
 import com.petit.toon.exception.notfound.CartoonNotFoundException;
 import com.petit.toon.repository.cartoon.CartoonRepository;
@@ -17,6 +19,7 @@ import com.petit.toon.service.cartoon.request.CartoonUploadServiceRequest;
 import com.petit.toon.service.cartoon.response.CartoonDetailResponse;
 import com.petit.toon.service.cartoon.response.CartoonListResponse;
 import com.petit.toon.service.cartoon.response.CartoonUploadResponse;
+import com.petit.toon.service.cartoon.response.ImageInsertResponse;
 import com.petit.toon.util.RedisUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +40,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.petit.toon.service.user.ProfileImageService.DEFAULT_PROFILE_IMAGE_ID;
 import static java.nio.file.Files.createDirectory;
@@ -303,6 +308,154 @@ public class CartoonServiceTest {
         assertThat(cartoon.getViewCount()).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("웹툰에 새로운 이미지를 삽입할 수 있다")
+    void insertImage1() throws IOException {
+        // given
+        User user = createUser("hotoran");
+        Cartoon cartoon = createCartoon(user);
+        createDirectory(Path.of(tempDir + File.separator + "toons" + File.separator + cartoon.getId()));
+
+        Image image1 = createImage(cartoon, getPath(cartoon, 1));
+        Image image2 = createImage(cartoon, getPath(cartoon, 2));
+        Image image3 = createImage(cartoon, getPath(cartoon, 3));
+        Image image4 = createImage(cartoon, getPath(cartoon, 4));
+        Image image5 = createImage(cartoon, getPath(cartoon, 5));
+        cartoon.setImages(new ArrayList<>(List.of(image1, image2, image3, image4, image5)));
+
+        MultipartFile file = new MockMultipartFile("sample1.png", "sample1.png", "multipart/form-data",
+                new FileInputStream(absolutePath + "/sample1.png"));
+
+        // when
+        ImageInsertResponse response = cartoonService.insertImage(user.getId(), cartoon.getId(), 3, file);
+
+        // then
+        Cartoon findCartoon = cartoonRepository.findById(cartoon.getId()).get();
+        assertThat(findCartoon.getImages().size()).isEqualTo(6);
+        assertThat(response.getPath()).isEqualTo(getPath(cartoon, 6));
+        assertThat(findCartoon.getImages().get(2)).isEqualTo(image3);
+        assertThat(findCartoon.getImages().get(4)).isEqualTo(image4);
+    }
+
+    @Test
+    @DisplayName("웹툰에 새로운 이미지를 삽입할 수 있다 - 웹툰이 존재하지 않는 경우")
+    void insertImage2() throws IOException {
+        // given
+        User user = createUser("hotoran");
+        Cartoon cartoon = createCartoon(user);
+
+        MultipartFile file = new MockMultipartFile("sample1.png", "sample1.png", "multipart/form-data",
+                new FileInputStream(absolutePath + "/sample1.png"));
+
+        // when // then
+        assertThatThrownBy(() -> cartoonService.insertImage(user.getId(), 99999L, 3, file))
+                .isInstanceOf(CartoonNotFoundException.class)
+                .hasMessage(CartoonNotFoundException.MESSAGE);
+    }
+
+    @Test
+    @DisplayName("웹툰에 새로운 이미지를 삽입할 수 있다 - 삽입 권한이 없는 경우")
+    void insertImage3() throws IOException {
+        // given
+        User user = createUser("hotoran");
+        Cartoon cartoon = createCartoon(user);
+
+        MultipartFile file = new MockMultipartFile("sample1.png", "sample1.png", "multipart/form-data",
+                new FileInputStream(absolutePath + "/sample1.png"));
+
+        // when // then
+        assertThatThrownBy(() -> cartoonService.insertImage(99999L, cartoon.getId(), 3, file))
+                .isInstanceOf(AuthorityNotMatchException.class)
+                .hasMessage(AuthorityNotMatchException.MESSAGE);
+    }
+
+    @Test
+    @DisplayName("웹툰에 새로운 이미지를 삽입할 수 있다 - 이미지 개수를 초과한 경우")
+    void insertImage4() throws IOException {
+        // given
+        User user = createUser("hotoran");
+        Cartoon cartoon = createCartoon(user);
+        createDirectory(Path.of(tempDir + File.separator + "toons" + File.separator + cartoon.getId()));
+
+        Image image1 = createImage(cartoon, getPath(cartoon, 1));
+        Image image2 = createImage(cartoon, getPath(cartoon, 2));
+        Image image3 = createImage(cartoon, getPath(cartoon, 3));
+        Image image4 = createImage(cartoon, getPath(cartoon, 4));
+        Image image5 = createImage(cartoon, getPath(cartoon, 5));
+        Image image6 = createImage(cartoon, getPath(cartoon, 6));
+        Image image7 = createImage(cartoon, getPath(cartoon, 7));
+        Image image8 = createImage(cartoon, getPath(cartoon, 8));
+        Image image9 = createImage(cartoon, getPath(cartoon, 9));
+        Image image10 = createImage(cartoon, getPath(cartoon, 10));
+        cartoon.setImages(new ArrayList<>(List.of(image1, image2, image3, image4, image5,
+                image6, image7, image8, image9, image10)));
+
+        MultipartFile file = new MockMultipartFile("sample1.png", "sample1.png", "multipart/form-data",
+                new FileInputStream(absolutePath + "/sample1.png"));
+
+        // when // then
+        assertThatThrownBy(() -> cartoonService.insertImage(user.getId(), cartoon.getId(), 3, file))
+                .isInstanceOf(ImageLimitExceededException.class)
+                .hasMessage(ImageLimitExceededException.MESSAGE);
+    }
+
+    @Test
+    @DisplayName("웹툰에 이미지를 삭제할 수 있다")
+    void removeImage() throws IOException {
+        // given
+        User user = createUser("hotoran");
+        Cartoon cartoon = createCartoon(user);
+        createDirectory(Path.of(tempDir + File.separator + "toons" + File.separator + cartoon.getId()));
+
+        Image image1 = createImage(cartoon, getPath(cartoon, 1));
+        Image image2 = createImage(cartoon, getPath(cartoon, 2));
+        Image image3 = createImage(cartoon, getPath(cartoon, 3));
+        cartoon.setImages(new ArrayList<>(List.of(image1, image2, image3)));
+
+        // when
+        cartoonService.removeImage(user.getId(), cartoon.getId(), 2);
+
+        // then
+        Cartoon findCartoon = cartoonRepository.findById(cartoon.getId()).get();
+        assertThat(findCartoon.getImages().size()).isEqualTo(2);
+        assertThat((new File(tempDir + File.separator + getPath(cartoon, 2))).exists()).isFalse();
+    }
+
+    @Test
+    @DisplayName("웹툰을 삭제한 자리에 이미지를 삽입하면, 이미지가 덮어쓰기가 된다")
+    void replaceImage() throws IOException {
+        // given
+        User user = createUser("hotoran");
+        Cartoon cartoon = createCartoon(user);
+        createDirectory(Path.of(tempDir + File.separator + "toons" + File.separator + cartoon.getId()));
+
+        MultipartFile file = new MockMultipartFile("sample1.png", "sample1.png", "multipart/form-data",
+                new FileInputStream(absolutePath + "/sample1.png"));
+
+        Image image1 = createImage(cartoon, getPath(cartoon, 1));
+        Image image2 = createImage(cartoon, getPath(cartoon, 2));
+        Image image3 = createImage(cartoon, getPath(cartoon, 3));
+        Image image4 = createImage(cartoon, getPath(cartoon, 4));
+        Image image5 = createImage(cartoon, getPath(cartoon, 5));
+
+        cartoon.setImages(new ArrayList<>(List.of(image1, image2, image3, image4, image5)));
+
+        cartoonService.insertImage(user.getId(), cartoon.getId(), 5, file);
+        cartoonService.removeImage(user.getId(), cartoon.getId(), 5);
+
+
+        // when
+        MultipartFile file2 = new MockMultipartFile("sample2.png", "sample2.png", "multipart/form-data",
+                new FileInputStream(absolutePath + "/sample2.png"));
+        ImageInsertResponse response = cartoonService.insertImage(user.getId(), cartoon.getId(), 5, file2);
+
+        // then
+        Cartoon findCartoon = cartoonRepository.findById(cartoon.getId()).get();
+        assertThat(findCartoon.getImages().size()).isEqualTo(6);
+        assertThat(response.getPath()).isEqualTo(getPath(cartoon, 6));
+    }
+
+
     private User createUser(String name) {
         User user = User.builder()
                 .name(name)
@@ -320,5 +473,17 @@ public class CartoonServiceTest {
                 .title("sample-title")
                 .user(user)
                 .build());
+    }
+
+    private Image createImage(Cartoon cartoon, String path) {
+        return imageRepository.save(
+                Image.builder()
+                        .cartoon(cartoon)
+                        .path(path)
+                        .build());
+    }
+
+    private String getPath(Cartoon cartoon, int index) {
+        return "toons" + File.separator + cartoon.getId() + File.separator + cartoon.getId() + "-" + index + ".png";
     }
 }
