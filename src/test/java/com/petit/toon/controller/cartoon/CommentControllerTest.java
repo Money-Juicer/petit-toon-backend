@@ -135,15 +135,15 @@ class CommentControllerTest extends RestDocsSupport {
                                         .description("댓글 ID"),
 
                                 fieldWithPath("comments[].userInfo").type(JsonFieldType.OBJECT)
-                                        .description("유저 정보"),
+                                        .description("댓글 유저 정보"),
                                 fieldWithPath("comments[].userInfo.id").type(JsonFieldType.NUMBER)
-                                        .description("댓글 ID"),
+                                        .description("댓글 유저 ID"),
                                 fieldWithPath("comments[].userInfo.nickname").type(JsonFieldType.STRING)
-                                        .description("댓글 ID"),
+                                        .description("댓글 유저 닉네임"),
                                 fieldWithPath("comments[].userInfo.tag").type(JsonFieldType.STRING)
-                                        .description("댓글 ID"),
+                                        .description("댓글 유저 태그"),
                                 fieldWithPath("comments[].userInfo.profileImagePath").type(JsonFieldType.STRING)
-                                        .description("댓글 ID"),
+                                        .description("댓글 유저 프로필이미지 경로"),
 
                                 fieldWithPath("comments[].content").type(JsonFieldType.STRING)
                                         .description("댓글 내용"),
