@@ -2,6 +2,7 @@ package com.petit.toon.service.cartoon.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.petit.toon.entity.cartoon.Comment;
+import com.petit.toon.service.user.response.UserResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 public class CommentResponse {
     private long commentId;
-    private long userId;
+    private UserResponse userInfo;
     private String content;
     private boolean myComment;
 
@@ -20,10 +21,10 @@ public class CommentResponse {
     private LocalDateTime modifiedDateTime;
 
     @Builder
-    private CommentResponse(long commentId, long userId, String content, boolean myComment,
+    private CommentResponse(long commentId, UserResponse userInfo, String content, boolean myComment,
                             LocalDateTime createdDateTime, LocalDateTime modifiedDateTime) {
         this.commentId = commentId;
-        this.userId = userId;
+        this.userInfo = userInfo;
         this.content = content;
         this.myComment = myComment;
         this.createdDateTime = createdDateTime;
@@ -33,7 +34,7 @@ public class CommentResponse {
     public static CommentResponse of(Comment comment, boolean myComment) {
         return CommentResponse.builder()
                 .commentId(comment.getId())
-                .userId(comment.getUser().getId())
+                .userInfo(UserResponse.of(comment.getUser()))
                 .content(comment.getContent())
                 .myComment(myComment)
                 .createdDateTime(comment.getCreatedDateTime())

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 public class MyCommentResponse {
     private long commentId;
-    private long cartoonId;
+    private CartoonResponse cartoonInfo;
     private String content;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
@@ -19,10 +19,10 @@ public class MyCommentResponse {
     private LocalDateTime modifiedDateTime;
 
     @Builder
-    private MyCommentResponse(long commentId, long cartoonId, String content,
+    private MyCommentResponse(long commentId, CartoonResponse cartoonInfo, String content,
                               LocalDateTime createdDateTime, LocalDateTime modifiedDateTime) {
         this.commentId = commentId;
-        this.cartoonId = cartoonId;
+        this.cartoonInfo = cartoonInfo;
         this.content = content;
         this.createdDateTime = createdDateTime;
         this.modifiedDateTime = modifiedDateTime;
@@ -31,7 +31,7 @@ public class MyCommentResponse {
     public static MyCommentResponse of(Comment comment) {
         return MyCommentResponse.builder()
                 .commentId(comment.getId())
-                .cartoonId(comment.getCartoon().getId())
+                .cartoonInfo(CartoonResponse.of(comment.getCartoon()))
                 .content(comment.getContent())
                 .createdDateTime(comment.getCreatedDateTime())
                 .modifiedDateTime(comment.getModifiedDateTime())
