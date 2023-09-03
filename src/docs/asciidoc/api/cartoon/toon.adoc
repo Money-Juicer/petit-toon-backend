@@ -73,3 +73,27 @@ include::{snippets}/toon-update/request-fields.adoc[]
 ==== HTTP Response
 
 include::{snippets}/toon-update/http-response.adoc[]
+
+[[toon-insertImage]]
+=== 이미지 삽입
+
+==== HTTP Request
+
+include::{snippets}/toon-insertImage/curl-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-insertImage/http-response.adoc[]
+include::{snippets}/toon-insertImage/response-fields.adoc[]
+
+[[toon-removeImage]]
+=== 이미지 삭제
+
+==== HTTP Request
+
+include::{snippets}/toon-removeImage/http-request.adoc[]
+include::{snippets}/toon-removeImage/path-parameters.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/toon-removeImage/http-response.adoc[]

@@ -67,6 +67,17 @@ include::{snippets}/exception-data-integrity-violation/http-request.adoc[]
 include::{snippets}/exception-data-integrity-violation/http-response.adoc[]
 include::{snippets}/exception-data-integrity-violation/response-fields.adoc[]
 
+==== 웹툰에 이미지를 10개 이상 추가 요청
+
+==== HTTP Request
+
+include::{snippets}/exception-image-limit-exceeded/curl-request.adoc[]
+
+==== HTTP Response
+
+include::{snippets}/exception-image-limit-exceeded/http-response.adoc[]
+include::{snippets}/exception-image-limit-exceeded/response-fields.adoc[]
+
 [[exception-404]]
 === [404] Not Found 예외
 
