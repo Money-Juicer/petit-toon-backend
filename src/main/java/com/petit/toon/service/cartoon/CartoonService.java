@@ -113,7 +113,7 @@ public class CartoonService {
             cartoon.insertImage(image, index);
             return new ImageInsertResponse(image.getPath());
         } catch (Exception e) {
-            imageService.deleteFile(imageService.getPath(multipartFile, cartoon.getId(), imageNumber));
+            imageService.deleteFile(imageService.getFullPath(multipartFile, cartoon.getId(), imageNumber + 1, toonDirectory));
             throw new RuntimeException(e);
         }
     }

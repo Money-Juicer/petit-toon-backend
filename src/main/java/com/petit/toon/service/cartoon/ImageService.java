@@ -82,9 +82,9 @@ public class ImageService {
                 .max().getAsInt();
     }
 
-    public String getPath(MultipartFile file, long cartoonId, int index) {
+    public String getFullPath(MultipartFile file, long cartoonId, int index, String toonDirectory) {
         String extension = extractExtension(file.getName());
-        return cartoonId + "-" + index + "." + extension;
+        return toonDirectory + File.separator + cartoonId + File.separator + cartoonId + "-" + index + "." + extension;
     }
 
     private int extractImageNumber(Image image) {
