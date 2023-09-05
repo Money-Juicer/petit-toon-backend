@@ -57,9 +57,11 @@ spring:
       on-profile: test
 
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: create
-    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
