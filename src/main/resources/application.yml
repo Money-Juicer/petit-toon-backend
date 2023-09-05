@@ -3,10 +3,10 @@ spring:
     default: local
 
   datasource:
-    url: jdbc:h2:tcp://localhost/~/toon
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:postgresql://localhost:5432/toon
+    username: dba
+    password: qwer1234!
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -26,7 +26,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     defer-datasource-initialization: true
     properties:
       hibernate:
