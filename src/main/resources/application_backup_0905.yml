@@ -1,0 +1,85 @@
+spring:
+  profiles:
+    default: local
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+jwt:
+  secret: YjZjM2QwODQwMDQ3NDVhYzQwNTFjYzFmMDI0YWQ1NmM5NDE2Njg1YThjODgwNjA4MTU0ZDI1ZTVhODZhZjk3NDVmNTk1OGUzZjliMzJmNDJjMjg4NTY0NDc1NzI5NTk3NjA4ZjBlNDhhMTk0YjUyODM5YWQyOWQ2OGQyODNiMTc=
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/toon
+    username: dba
+    password: qwer1234!
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  sql:
+    init:
+      mode: always
+
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+
+app:
+  resource: src/main/resources/static/
+  toon:
+    dir: src/main/resources/static/toons
+  user:
+    image:
+      dir: src/main/resources/static/profileImages
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test_toon
+    username: dba
+    password: qwer1234!
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  sql:
+    init:
+      mode: never
+
+app:
+  resource: src/test/resources/static
+  toon:
+    dir: src/test/resources/toons
+  user:
+    image:
+      dir: src/test/resources/profileImages
