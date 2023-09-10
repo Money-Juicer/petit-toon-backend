@@ -65,7 +65,7 @@ public class CartoonService {
         List<Image> images = imageService.storeImages(toonImages, cartoon, toonDirectory);
         cartoon.setImages(images);
 
-        String thumbnailPath = imageService.makeThumbnail(new File(getThumbnailPath(images)), cartoon, toonDirectory);
+        String thumbnailPath = imageService.makeThumbnail(new File(getThumbnailPath(images.get(0))), cartoon, toonDirectory);
 
         cartoon.setThumbnailPath(thumbnailPath);
         cartoonRepository.save(cartoon);
@@ -110,6 +110,9 @@ public class CartoonService {
         int imageNumber = imageService.getLastImageNumber(cartoon);
         try {
             Image image = imageService.storeImage(multipartFile, cartoon, imageNumber + 1, toonDirectory);
+            if (index == 0) {
+                imageService.makeThumbnail(new File(getThumbnailPath(image)), cartoon, toonDirectory);
+            }
             cartoon.insertImage(image, index);
             return new ImageInsertResponse(image.getPath());
         } catch (Exception e) {
@@ -169,7 +172,7 @@ public class CartoonService {
         this.toonDirectory = path;
     }
 
-    private String getThumbnailPath(List<Image> images) {
-        return toonDirectory.substring(0, toonDirectory.indexOf("toons")) + images.get(0).getPath();
+    private String getThumbnailPath(Image image) {
+        return toonDirectory.substring(0, toonDirectory.indexOf("toons")) + image.getPath();
     }
 }
