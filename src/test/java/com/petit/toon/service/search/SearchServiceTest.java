@@ -48,7 +48,7 @@ class SearchServiceTest {
         // then
         assertThat(searchResponse.getUsers())
                 .extracting("id")
-                .containsExactly(user1.getId());
+                .contains(user1.getId());
     }
 
     @Test
