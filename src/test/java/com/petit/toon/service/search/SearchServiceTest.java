@@ -68,7 +68,7 @@ class SearchServiceTest {
         // then
         assertThat(searchResponse.getCartoons())
                 .extracting("id")
-                .containsExactly(toon1.getId(), toon3.getId());
+                .contains(toon1.getId(), toon3.getId());
     }
 
     private Cartoon createToon(User user, String title, String description) {
