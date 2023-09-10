@@ -29,6 +29,9 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
 
     @Override
     public List<User> findAllWithProfileImageWithExactOrder(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
         return queryFactory.select(user)
                 .from(user)
                 .join(profileImage).on(user.profileImage.eq(profileImage)).fetchJoin()
