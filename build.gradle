@@ -69,8 +69,8 @@ test {
 
 // Exclude resources from the jar
 jar {
-	exclude("static/toons")
-	exclude("static/profileImages")
+	processResources.exclude("static/toons")
+	processResources.exclude("static/profileImages")
 }
 
 asciidoctor {
