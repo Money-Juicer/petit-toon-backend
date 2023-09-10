@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.petit'
-version = '0.0.1-SNAPSHOT'
+version = '0.1'
 
 java {
 	sourceCompatibility = '17'
@@ -65,6 +65,12 @@ ext {
 test {
 	outputs.dir snippetsDir
 	useJUnitPlatform()
+}
+
+// Exclude resources from the jar
+jar {
+	exclude("static/toons")
+	exclude("static/profileImages")
 }
 
 asciidoctor {
