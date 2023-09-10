@@ -20,6 +20,7 @@ import java.util.Optional;
 public class JwtVerificationFilter extends OncePerRequestFilter {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String ACCESS_TOKEN_NAME = "accessToken";
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -41,6 +42,6 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 //            return Optional.ofNullable(
 //                    authorization.substring(BEARER_PREFIX.length(), authorization.length()));
 //        }
-        return cookieUtil.get(request, "accessToken").map(Cookie::getValue);
+        return cookieUtil.get(request, ACCESS_TOKEN_NAME).map(Cookie::getValue);
     }
 }
