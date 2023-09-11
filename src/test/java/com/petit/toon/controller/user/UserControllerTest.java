@@ -3,7 +3,6 @@ package com.petit.toon.controller.user;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petit.toon.controller.RestDocsSupport;
 import com.petit.toon.controller.user.request.LoginRequest;
-import com.petit.toon.controller.user.request.ReissueRequest;
 import com.petit.toon.controller.user.request.SignupRequest;
 import com.petit.toon.exception.badrequest.EmailAlreadyRegisteredException;
 import com.petit.toon.exception.badrequest.IpAddressNotMatchException;
@@ -15,6 +14,7 @@ import com.petit.toon.service.user.UserService;
 import com.petit.toon.service.user.response.AuthResponse;
 import com.petit.toon.service.user.response.ReissueResponse;
 import com.petit.toon.service.user.response.SignupResponse;
+import com.petit.toon.util.CookieUtil;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,9 +26,13 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -45,6 +49,9 @@ class UserControllerTest extends RestDocsSupport {
 
     @MockBean
     AuthService authService;
+
+    @MockBean
+    CookieUtil cookieUtil;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -240,15 +247,17 @@ class UserControllerTest extends RestDocsSupport {
                         .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTMwNTkwNTV9.mTA7MeINcCshC7Oz5rY6R8RVX8TxrSFgakKBqIhK9pY")
                         .build());
 
+        Cookie cookie = new Cookie("refreshToken", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTMwNTkwNTV9.mTA7MeINcCshC7Oz5rY6R8RVX8TxrSFgakKBqIhK9pY");
+        given(cookieUtil.get(any(), anyString())).willReturn(Optional.of(cookie));
+
         // when // then
         mockMvc.perform(post("/api/v1/token/reissue")
-                        .cookie(new Cookie("refreshToken", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTMwNTkwNTV9.mTA7MeINcCshC7Oz5rY6R8RVX8TxrSFgakKBqIhK9pY")))
+                        .cookie(cookie))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("auth-reissue",
-                        requestFields(
-                                fieldWithPath("refreshToken").type(JsonFieldType.STRING)
-                                        .description("refresh 토큰")
+                        requestCookies(
+                                cookieWithName("refreshToken").description("refresh 토큰")
                         ),
                         responseFields(
                                 fieldWithPath("accessToken").type(JsonFieldType.STRING)
@@ -286,10 +295,6 @@ class UserControllerTest extends RestDocsSupport {
         // given
         given(authService.reissueToken(any())).willThrow(new RefreshTokenNotFoundException());
 
-        ReissueRequest request = ReissueRequest.builder()
-                .refreshToken("Refresh 토큰 유효 기간이 지난 경우")
-                .build();
-
         // when // then
         mockMvc.perform(post("/api/v1/token/reissue")
                         .cookie(new Cookie("refreshToken", "Refresh 토큰 유효 기간이 지난 경우")))
@@ -311,10 +316,6 @@ class UserControllerTest extends RestDocsSupport {
     void reissue4() throws Exception {
         // given
         given(authService.reissueToken(any())).willThrow(new IpAddressNotMatchException());
-
-        ReissueRequest request = ReissueRequest.builder()
-                .refreshToken("로그인 했을 때의 IP 주소와 다른 경우")
-                .build();
 
         // when // then
         mockMvc.perform(post("/api/v1/token/reissue")
