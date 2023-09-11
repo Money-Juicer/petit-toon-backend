@@ -15,6 +15,7 @@ import com.petit.toon.service.user.UserService;
 import com.petit.toon.service.user.response.AuthResponse;
 import com.petit.toon.service.user.response.ReissueResponse;
 import com.petit.toon.service.user.response.SignupResponse;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -239,15 +240,9 @@ class UserControllerTest extends RestDocsSupport {
                         .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTMwNTkwNTV9.mTA7MeINcCshC7Oz5rY6R8RVX8TxrSFgakKBqIhK9pY")
                         .build());
 
-        ReissueRequest request = ReissueRequest.builder()
-                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTMwNTkwNTV9.mTA7MeINcCshC7Oz5rY6R8RVX8TxrSFgakKBqIhK9pY")
-                .build();
-
         // when // then
         mockMvc.perform(post("/api/v1/token/reissue")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(objectMapper.writeValueAsBytes(request)))
+                        .cookie(new Cookie("refreshToken", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzYW1wbGVAZW1haWwuY29tIiwiZW1haWwiOiJzYW1wbGVAZW1haWwuY29tIiwiaWF0IjoxNjkxODQ5NDU1LCJleHAiOjE2OTMwNTkwNTV9.mTA7MeINcCshC7Oz5rY6R8RVX8TxrSFgakKBqIhK9pY")))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("auth-reissue",
@@ -269,15 +264,9 @@ class UserControllerTest extends RestDocsSupport {
         // given
         given(authService.reissueToken(any())).willThrow(new TokenNotValidException());
 
-        ReissueRequest request = ReissueRequest.builder()
-                .refreshToken("잘못된 토큰 값을 입력한 경우")
-                .build();
-
         // when // then
         mockMvc.perform(post("/api/v1/token/reissue")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(objectMapper.writeValueAsBytes(request)))
+                        .cookie(new Cookie("refreshToken", "잘못된 토큰 값을 입력한 경우")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.message").value(TokenNotValidException.MESSAGE))
@@ -303,9 +292,7 @@ class UserControllerTest extends RestDocsSupport {
 
         // when // then
         mockMvc.perform(post("/api/v1/token/reissue")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(objectMapper.writeValueAsBytes(request)))
+                        .cookie(new Cookie("refreshToken", "Refresh 토큰 유효 기간이 지난 경우")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("404"))
                 .andExpect(jsonPath("$.message").value(RefreshTokenNotFoundException.MESSAGE))
@@ -331,9 +318,7 @@ class UserControllerTest extends RestDocsSupport {
 
         // when // then
         mockMvc.perform(post("/api/v1/token/reissue")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .content(objectMapper.writeValueAsBytes(request)))
+                        .cookie(new Cookie("refreshToken", "로그인 했을 때의 IP 주소와 다른 경우")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.message").value(IpAddressNotMatchException.MESSAGE))
