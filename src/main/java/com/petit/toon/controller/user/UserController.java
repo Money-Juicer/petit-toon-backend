@@ -55,12 +55,13 @@ public class UserController {
     @PostMapping("/api/v1/token/reissue")
     public ResponseEntity<ReissueResponse> reissue(HttpServletRequest httpRequest,
                                                    HttpServletResponse httpResponse) {
-        Optional<String> refreshToken = cookieUtil.get(httpRequest, "refreshToken").map(Cookie::getValue);
+        Optional<Cookie> refreshToken = cookieUtil.get(httpRequest, "refreshToken");
         if (refreshToken.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
+        String tokenValue = refreshToken.get().getValue();
         ReissueServiceRequest serviceRequest = ReissueServiceRequest.builder()
-                .refreshToken(refreshToken.get())
+                .refreshToken(tokenValue)
                 .clientIp(getClientIp(httpRequest))
                 .build();
 
