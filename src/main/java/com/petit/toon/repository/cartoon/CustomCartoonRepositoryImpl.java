@@ -22,6 +22,9 @@ public class CustomCartoonRepositoryImpl implements CustomCartoonRepository {
 
     @Override
     public List<Cartoon> findAllWithExactOrder(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
         return queryFactory.select(cartoon)
                 .from(cartoon)
                 .where(cartoon.id.in(ids))
@@ -31,6 +34,9 @@ public class CustomCartoonRepositoryImpl implements CustomCartoonRepository {
 
     @Override
     public List<Cartoon> findAllWithUserWithExactOrder(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
         return queryFactory.select(cartoon)
                 .from(cartoon)
                 .join(user).on(cartoon.user.eq(user)).fetchJoin()
