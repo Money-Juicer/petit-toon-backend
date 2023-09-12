@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,6 +17,7 @@ import static com.petit.toon.service.rank.RankService.CARTOON_RANK_KEY;
 import static com.petit.toon.service.rank.RankService.USER_RANK_KEY;
 
 @Component
+@Transactional
 @RequiredArgsConstructor
 public class RankScheduler {
     private final RankRepository rankRepository;

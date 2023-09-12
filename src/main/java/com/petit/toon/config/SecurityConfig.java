@@ -4,7 +4,6 @@ import com.petit.toon.security.JwtAccessDeniedHandler;
 import com.petit.toon.security.JwtAuthenticationEntryPoint;
 import com.petit.toon.security.JwtVerificationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -42,7 +41,6 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/resources/**").permitAll()
                                 .requestMatchers("/index.html").permitAll()

@@ -22,7 +22,8 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -135,7 +136,7 @@ class InquiryControllerTest extends RestDocsSupport {
     @DisplayName("Tag 중복 조회 API")
     void checkDuplicateTag() throws Exception {
         // given
-        given(inquiryService.checkTagExist(anyString())).willReturn(new TagExistResponse(anyBoolean()));
+        given(inquiryService.checkTagExist(eq("sample-tag"))).willReturn(new TagExistResponse(true));
 
         // when // then
         mockMvc.perform(post("/api/v1/user/{tag}", "sample-tag"))
