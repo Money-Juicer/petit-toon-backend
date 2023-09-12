@@ -1,6 +1,13 @@
 [[feed]]
 === Feed
 
+1. Cached Feed List: 유저가 웹툰 업로드 시, 팔로워의 피드 리스트에 toonId 저장. +
+2. Influencer Feed List: Feed API 호출 시, 자신이 팔로우 하고 있는 인플루언서 작가의 ToonId를 갖고옴. +
+3. Ranking Feed List: 매 1시간마다 랭킹 스케줄링을 통해 정렬된 상위 랭킹의 웹툰을 갖고옴.
+
+1, 2, 3번의 각 리스트에서 Parameter로 받은 Size만큼 가져옴. (default size = 10) 1,2,3 리스트를 합쳐, 전체 30개를 정렬함.
+(이 때 중복 웹툰 제거함)
+
 ==== HTTP Request
 
 include::{snippets}/feed/http-request.adoc[]
